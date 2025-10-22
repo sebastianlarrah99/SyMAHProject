@@ -1,12 +1,6 @@
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background-color: #f4f4f4;
-  color: #333;
-}
-
 .navbar {
   position: fixed;
+  z-index: 100;
   top: 0;
   left: 0;
   width: 100%;

@@ -42,7 +42,7 @@ tr:nth-child(even) {
 }
 
 .table-row:hover {
-  background-color: #f5d863;
+  background-color: #ffcc00;
   color: #fff;
 }
 
