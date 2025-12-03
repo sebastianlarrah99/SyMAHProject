@@ -7,11 +7,9 @@ const empleadoSchema = new mongoose.Schema(
       required: true,
     },
     cargo: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Cargo",
       required: true,
-    },
-    departamento: {
-      type: String,
     },
     estado: {
       type: String,
@@ -22,7 +20,7 @@ const empleadoSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    pagadoMes: {
+    pagado: {
       type: Number,
       default: 0,
     },

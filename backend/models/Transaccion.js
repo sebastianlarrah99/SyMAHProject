@@ -13,7 +13,7 @@ const transaccionSchema = new mongoose.Schema(
     },
     fecha: {
       type: Date,
-      default: Date.now,
+      required: true,
     },
     actor: {
       type: mongoose.Schema.Types.ObjectId,
@@ -24,6 +24,10 @@ const transaccionSchema = new mongoose.Schema(
       type: String,
       required: true,
       enum: ["Empleado", "Trabajo"],
+    },
+    descripcion: {
+      type: String,
+      required: false,
     },
   },
   transaccionBaseOptions

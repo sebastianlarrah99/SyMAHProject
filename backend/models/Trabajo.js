@@ -8,11 +8,11 @@ const trabajoSchema = new mongoose.Schema(
     },
     descripcion: {
       type: String,
-      required: true,
+      required: false,
     },
     estado: {
       type: String,
-      enum: ["pendiente", "en progreso", "completado"],
+      enum: ["pendiente", "en progreso", "completado", "activo"],
       default: "pendiente",
     },
     fechaInicio: {
@@ -22,10 +22,6 @@ const trabajoSchema = new mongoose.Schema(
     fechaFin: {
       type: Date,
     },
-    tipo: {
-      type: String,
-      required: true,
-    },
     gastoManoObra: {
       type: Number,
       default: 0,
@@ -33,6 +29,10 @@ const trabajoSchema = new mongoose.Schema(
     acumuladoPagos: {
       type: Number,
       default: 0,
+    },
+    ganancias: {
+      type: Number,
+      default: 0, // Se calculará en el controlador
     },
     cliente: {
       type: mongoose.Schema.Types.ObjectId,

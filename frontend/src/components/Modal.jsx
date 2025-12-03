@@ -1,32 +1,25 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "../styles/Modal.css";
 
-function Modal({ children, onClose }) {
-  const [isVisible, setIsVisible] = useState(false);
+function Modal({ children, onClose, title, description }) {
   const [isClosing, setIsClosing] = useState(false);
-
-  useEffect(() => {
-    setIsVisible(true); // Activar la animación de apertura
-  }, []);
 
   const handleClose = () => {
     setIsClosing(true);
     setTimeout(() => {
       onClose();
-    }, 500); // Duración de la animación de cierre
+    }, 300); // Duración de la animación de cierre (coincide con el CSS)
   };
 
   return (
     <>
       <div className="modal-overlay" onClick={handleClose}></div>
-      <div
-        className={`modal ${isVisible ? "visible" : ""} ${
-          isClosing ? "hidden" : ""
-        }`}
-      >
-        <button className="modal-close" onClick={handleClose}>
+      <div className={`modal ${isClosing ? "closing" : ""}`}>
+        <button className="modal-close" onClick={handleClose} id="close-button">
           &times;
         </button>
+        {title && <h2 className="modal-title">{title}</h2>}
+        {description && <p className="modal-description">{description}</p>}
         {children}
       </div>
     </>

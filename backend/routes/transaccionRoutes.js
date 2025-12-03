@@ -2,19 +2,58 @@ const express = require("express");
 const router = express.Router();
 const transaccionController = require("../controllers/transaccionController");
 
+// Rutas específicas deben ir antes de las rutas dinámicas
+
+// GET - Transacciones de cobros
+router.get("/tipo/cobros", transaccionController.obtenerCobros);
+
+// GET - Transacciones de pagos
+router.get("/tipo/pagos", transaccionController.obtenerPagos);
+
+// GET - Obtener estadísticas generales
+router.get(
+  "/estadisticas/generales",
+  transaccionController.obtenerEstadisticasGenerales
+);
+
+// GET - Obtener estadísticas por período
+router.get(
+  "/estadisticas/periodo/:periodo",
+  transaccionController.obtenerEstadisticasPorPeriodo
+);
+
+// GET - Obtener transacciones pendientes
+router.get("/pendientes", transaccionController.obtenerPendientes);
+
+// PUT - Confirmar transacción
+router.put("/confirmar/:id", transaccionController.confirmar);
+
+// PUT - Cancelar transacción
+router.put("/cancelar/:id", transaccionController.cancelar);
+
+// GET - Obtener resumen financiero
+router.get(
+  "/resumen-financiero",
+  transaccionController.obtenerResumenFinanciero
+);
+
 // CRUD Operations para Transacciones
 
 // GET - Obtener todas las transacciones (Read - Consulta)
 router.get("/", transaccionController.obtenerTodas);
 
 // GET - Obtener transacción por ID (Read - Consulta específica)
-router.get("/:id", transaccionController.obtenerPorId);
+router.get(
+  "/:id",
+  (req, res, next) => {
+    console.log("Ruta: /:id con ID:", req.params.id);
+    next();
+  },
+  transaccionController.obtenerPorId
+);
 
 // POST - Crear nueva transacción (Create - Alta)
 router.post("/", transaccionController.crear);
-
-// PUT - Actualizar transacción existente (Update - Modificación)
-router.put("/:id", transaccionController.actualizar);
 
 // DELETE - Eliminar transacción (Delete - Baja)
 router.delete("/:id", transaccionController.eliminar);
@@ -40,58 +79,10 @@ router.get(
   transaccionController.buscarPorRangoFecha
 );
 
-// GET - Obtener transacciones por rango de montos
+// Restaurar rutas eliminadas
 router.get(
-  "/buscar/por-monto/:montoMin/:montoMax",
+  "/buscar/rango-monto/:montoMin/:montoMax",
   transaccionController.buscarPorRangoMonto
-);
-
-// GET - Transacciones de cobros
-router.get("/tipo/cobros", transaccionController.obtenerCobros);
-
-// GET - Transacciones de pagos
-router.get("/tipo/pagos", transaccionController.obtenerPagos);
-
-// GET - Obtener balance de transacciones
-router.get("/balance/general", transaccionController.obtenerBalanceGeneral);
-
-// GET - Obtener balance por cliente
-router.get(
-  "/balance/por-cliente/:clienteId",
-  transaccionController.obtenerBalancePorCliente
-);
-
-// GET - Obtener balance por empleado
-router.get(
-  "/balance/por-empleado/:empleadoId",
-  transaccionController.obtenerBalancePorEmpleado
-);
-
-// GET - Obtener estadísticas de transacciones
-router.get(
-  "/estadisticas/generales",
-  transaccionController.obtenerEstadisticasGenerales
-);
-
-// GET - Obtener estadísticas por período
-router.get(
-  "/estadisticas/por-periodo/:periodo",
-  transaccionController.obtenerEstadisticasPorPeriodo
-);
-
-// GET - Transacciones pendientes de confirmación
-router.get("/estado/pendientes", transaccionController.obtenerPendientes);
-
-// PUT - Confirmar transacción
-router.put("/:id/confirmar", transaccionController.confirmar);
-
-// PUT - Cancelar transacción
-router.put("/:id/cancelar", transaccionController.cancelar);
-
-// GET - Resumen financiero
-router.get(
-  "/resumen/financiero",
-  transaccionController.obtenerResumenFinanciero
 );
 
 module.exports = router;

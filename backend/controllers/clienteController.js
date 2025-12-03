@@ -1,4 +1,5 @@
 const Cliente = require("../models/Cliente");
+const Trabajo = require("../models/Trabajo");
 
 // Obtener todos los clientes
 exports.obtenerTodos = async (req, res) => {
@@ -121,6 +122,39 @@ exports.obtenerEstadisticas = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Error al obtener las estadísticas del cliente",
+      error,
+    });
+  }
+};
+
+// Obtener trabajos de un cliente con pagos y gastos de mano de obra
+exports.obtenerTrabajosConDetalles = async (req, res) => {
+  try {
+    const trabajos = await Trabajo.find({ cliente: req.params.id });
+
+    if (!trabajos || trabajos.length === 0) {
+      return res.status(200).json({
+        message: "No se encontraron trabajos asociados a este cliente.",
+      });
+    }
+
+    const trabajosConDetalles = trabajos.map((trabajo) => {
+      return {
+        titulo: trabajo.titulo,
+        descripcion: trabajo.descripcion,
+        totalPagos: trabajo.acumuladoPagos,
+        totalGastosManoObra: trabajo.gastoManoObra,
+      };
+    });
+
+    res.status(200).json(trabajosConDetalles);
+  } catch (error) {
+    console.error(
+      "Error al obtener los trabajos con detalles del cliente:",
+      error
+    );
+    res.status(500).json({
+      message: "Error al obtener los trabajos con detalles del cliente",
       error,
     });
   }

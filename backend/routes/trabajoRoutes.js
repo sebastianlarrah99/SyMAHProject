@@ -54,19 +54,14 @@ router.get("/:id/empleados", trabajoController.obtenerEmpleados);
 // GET - Obtener transacciones relacionadas con un trabajo
 router.get("/:id/transacciones", trabajoController.obtenerTransacciones);
 
-// GET - Obtener estadísticas de trabajos
+// Restaurar rutas eliminadas
 router.get(
   "/estadisticas/generales",
   trabajoController.obtenerEstadisticasGenerales
 );
-
-// GET - Trabajos pendientes
 router.get("/estado/pendientes", trabajoController.obtenerPendientes);
-
-// GET - Trabajos en progreso
 router.get("/estado/en-progreso", trabajoController.obtenerEnProgreso);
-
-// GET - Trabajos completados
 router.get("/estado/completados", trabajoController.obtenerCompletados);
+router.get("/estado/activos", trabajoController.obtenerActivos);
 
 module.exports = router;

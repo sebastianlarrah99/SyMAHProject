@@ -42,13 +42,15 @@ tr:nth-child(even) {
 }
 
 .table-row:hover {
-  background-color: #ffcc00;
+  background-color: #d1b442;
   color: #fff;
 }
 
 .action-buttons {
   display: flex;
   justify-content: center;
+  border-style: none;
+  gap: 10px; /* Añadido para separar los botones */
 }
 
 .btn {
@@ -58,12 +60,14 @@ tr:nth-child(even) {
   font-size: 18px;
   padding: 5px;
   transition: transform 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn:hover {
-  transform: scale(1.7);
+  transform: scale(1.1);
   color: #f5d863;
-
   transition: transform 0.2s;
 }
 
@@ -75,10 +79,29 @@ tr:nth-child(even) {
   color: #ffc107;
 }
 
-.btn.clock {
+.btn.hours {
   color: #28a745;
 }
 
 .btn.delete {
   color: #dc3545;
+  border: none !important;
+  background: none !important;
+  cursor: pointer;
+  font-size: 18px !important;
+  padding: 5px !important;
+  transition: transform 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 25px;
+}
+.btn.toggle {
+  color: #272829;
+  font-size: 20px;
+  border-style: none;
+}
+
+.btn.list {
+  color: #272829;
 }

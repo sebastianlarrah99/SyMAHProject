@@ -23,6 +23,7 @@ app.use("/api/clientes", require("./routes/clienteRoutes"));
 app.use("/api/trabajos", require("./routes/trabajoRoutes"));
 app.use("/api/transacciones", require("./routes/transaccionRoutes"));
 app.use("/api/registro-horas", require("./routes/registroHorasRoutes"));
+app.use("/api/cargos", require("./routes/cargoRoutes"));
 
 // Arrancar el Servidor
 app.listen(PORT, () => {

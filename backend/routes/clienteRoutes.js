@@ -25,6 +25,12 @@ router.get("/buscar/por-nombre/:nombre", clienteController.buscarPorNombre);
 // GET - Obtener trabajos de un cliente específico
 router.get("/:id/trabajos", clienteController.obtenerTrabajos);
 
+// GET - Obtener trabajos de un cliente con detalles
+router.get(
+  "/:id/trabajos-detalles",
+  clienteController.obtenerTrabajosConDetalles
+);
+
 // GET - Obtener estadísticas de un cliente
 router.get("/:id/estadisticas", clienteController.obtenerEstadisticas);
 

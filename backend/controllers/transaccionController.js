@@ -35,63 +35,67 @@ exports.crear = async (req, res) => {
   try {
     const { tipo, actor, actorTipo, monto, ...data } = req.body;
 
+    // Validar que el monto sea un número válido
+    const montoNumerico = parseFloat(monto);
+    if (isNaN(montoNumerico) || montoNumerico <= 0) {
+      console.error("Monto inválido recibido:", monto);
+      return res.status(400).json({
+        message: "El monto debe ser un número válido y mayor a 0.",
+      });
+    }
+
+    // Normalizar valores de tipo para aceptar "Ingreso" y "Egreso"
+    const normalizedTipo =
+      tipo === "Ingreso" ? "cobro" : tipo === "Egreso" ? "pago" : tipo;
+
     // Verificar que el actor sea válido según el tipo de transacción
-    if (tipo === "pago" && actorTipo === "Empleado") {
+    if (normalizedTipo === "pago" && actorTipo === "Empleado") {
       const empleado = await Empleado.findById(actor);
       if (!empleado) {
+        console.error("Empleado no encontrado para el ID:", actor);
         return res.status(400).json({
           message: "El ID del actor no corresponde a un empleado válido.",
         });
       }
-      // Descontar el monto del saldo del empleado
-      empleado.saldo -= monto;
+      empleado.saldo -= montoNumerico; // Restar el monto al saldo
+      empleado.pagado = (empleado.pagado || 0) + montoNumerico; // Acumular en pagado
       await empleado.save();
-    } else if (tipo === "cobro" && actorTipo === "Trabajo") {
+    } else if (normalizedTipo === "cobro" && actorTipo === "Trabajo") {
       const trabajo = await Trabajo.findById(actor);
       if (!trabajo) {
+        console.error("Trabajo no encontrado para el ID:", actor);
         return res.status(400).json({
           message: "El ID del actor no corresponde a un trabajo válido.",
         });
       }
-      // Sumar el monto al acumuladoPagos del trabajo
-      trabajo.acumuladoPagos += monto;
+      trabajo.acumuladoPagos = (trabajo.acumuladoPagos || 0) + montoNumerico;
+      await trabajo.save();
+
+      // Actualizar las ganancias del trabajo
+      trabajo.ganancias = trabajo.acumuladoPagos - trabajo.gastoManoObra;
       await trabajo.save();
     } else {
+      console.error("Tipo de transacción o actor inválido:", {
+        tipo: normalizedTipo,
+        actorTipo,
+      });
       return res.status(400).json({
         message: "El tipo de transacción y el tipo de actor no coinciden.",
       });
     }
 
     const nuevaTransaccion = new Transaccion({
-      tipo,
+      tipo: normalizedTipo,
       actor,
       actorTipo,
-      monto,
+      monto: montoNumerico,
       ...data,
     });
     const transaccionGuardada = await nuevaTransaccion.save();
     res.status(201).json(transaccionGuardada);
   } catch (error) {
+    console.error("Error al crear la transacción:", error);
     res.status(500).json({ message: "Error al crear la transacción", error });
-  }
-};
-
-// Actualizar transacción existente
-exports.actualizar = async (req, res) => {
-  try {
-    const transaccionActualizada = await Transaccion.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    );
-    if (!transaccionActualizada) {
-      return res.status(404).json({ message: "Transacción no encontrada" });
-    }
-    res.status(200).json(transaccionActualizada);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error al actualizar la transacción", error });
   }
 };
 
@@ -104,8 +108,32 @@ exports.eliminar = async (req, res) => {
     if (!transaccionEliminada) {
       return res.status(404).json({ message: "Transacción no encontrada" });
     }
+
+    const { actor, actorTipo, tipo, monto } = transaccionEliminada;
+
+    console.log("Transacción eliminada:", transaccionEliminada);
+
+    // Ajustar los efectos de la transacción eliminada directamente
+    if (actorTipo === "Empleado" && tipo === "pago") {
+      const empleado = await Empleado.findById(actor);
+      if (empleado) {
+        console.log("Empleado antes de eliminar transacción:", empleado);
+        empleado.saldo += monto; // Ajustar el saldo
+        empleado.pagado -= monto; // Ajustar el pagado
+        await empleado.save();
+        console.log("Empleado después de eliminar transacción:", empleado);
+      }
+    } else if (actorTipo === "Trabajo" && tipo === "cobro") {
+      const trabajo = await Trabajo.findById(actor);
+      if (trabajo) {
+        trabajo.acumuladoPagos -= monto; // Ajustar el acumulado de pagos
+        await trabajo.save();
+      }
+    }
+
     res.status(200).json({ message: "Transacción eliminada correctamente" });
   } catch (error) {
+    console.error("Error al eliminar la transacción:", error);
     res
       .status(500)
       .json({ message: "Error al eliminar la transacción", error });
@@ -198,40 +226,34 @@ exports.buscarPorRangoMonto = async (req, res) => {
   }
 };
 
-// Obtener transacciones de cobros
-exports.obtenerCobros = async (req, res) => {
-  try {
-    const cobros = await Transaccion.find({ tipo: "cobro" });
-    res.status(200).json(cobros);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error al obtener transacciones de cobros", error });
-  }
-};
-
-// Obtener transacciones de pagos
-exports.obtenerPagos = async (req, res) => {
-  try {
-    const pagos = await Transaccion.find({ tipo: "pago" });
-    res.status(200).json(pagos);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error al obtener transacciones de pagos", error });
-  }
-};
-
 // Obtener balance general de transacciones
 exports.obtenerBalanceGeneral = async (req, res) => {
   try {
+    console.log("Iniciando obtención del balance general...");
+
+    // Obtener todas las transacciones
     const transacciones = await Transaccion.find();
-    const balance = transacciones.reduce(
+    console.log("Transacciones obtenidas:", transacciones);
+
+    // Validar que todas las transacciones tengan un campo 'monto' válido
+    const transaccionesValidas = transacciones.filter((transaccion) => {
+      if (typeof transaccion.monto !== "number" || isNaN(transaccion.monto)) {
+        console.error("Transacción inválida encontrada:", transaccion);
+        return false;
+      }
+      return true;
+    });
+
+    // Calcular el balance general
+    const balance = transaccionesValidas.reduce(
       (acc, transaccion) => acc + transaccion.monto,
       0
     );
+
+    console.log("Balance calculado:", balance);
     res.status(200).json({ balance });
   } catch (error) {
+    console.error("Error al obtener el balance general:", error);
     res
       .status(500)
       .json({ message: "Error al obtener el balance general", error });
@@ -292,8 +314,7 @@ exports.obtenerEstadisticasGenerales = async (req, res) => {
 // Obtener estadísticas por período
 exports.obtenerEstadisticasPorPeriodo = async (req, res) => {
   try {
-    const { periodo } = req.params; // Ejemplo: 'mensual', 'anual'
-    // Implementar lógica para calcular estadísticas por período
+    const { periodo } = req.params;
     res.status(200).json({ message: "Estadísticas por período", periodo });
   } catch (error) {
     res
@@ -322,9 +343,6 @@ exports.confirmar = async (req, res) => {
       { estado: "confirmada" },
       { new: true }
     );
-    if (!transaccion) {
-      return res.status(404).json({ message: "Transacción no encontrada" });
-    }
     res.status(200).json(transaccion);
   } catch (error) {
     res
@@ -341,9 +359,6 @@ exports.cancelar = async (req, res) => {
       { estado: "cancelada" },
       { new: true }
     );
-    if (!transaccion) {
-      return res.status(404).json({ message: "Transacción no encontrada" });
-    }
     res.status(200).json(transaccion);
   } catch (error) {
     res
@@ -371,5 +386,29 @@ exports.obtenerResumenFinanciero = async (req, res) => {
     res
       .status(500)
       .json({ message: "Error al obtener el resumen financiero", error });
+  }
+};
+
+// Obtener transacciones de cobros
+exports.obtenerCobros = async (req, res) => {
+  try {
+    const cobros = await Transaccion.find({ tipo: "cobro" });
+    res.status(200).json(cobros);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error al obtener transacciones de cobros", error });
+  }
+};
+
+// Obtener transacciones de pagos
+exports.obtenerPagos = async (req, res) => {
+  try {
+    const pagos = await Transaccion.find({ tipo: "pago" });
+    res.status(200).json(pagos);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error al obtener transacciones de pagos", error });
   }
 };

@@ -26,6 +26,11 @@ function App() {
         <Route path="/trabajos" element={<Trabajo />} />
         <Route path="/clientes" element={<Cliente />} />
         <Route path="/transacciones" element={<Transaccion />} />
+        <Route path="*" element={<h1>404 Not Found</h1>} />
+        <Route
+          path="/cargos"
+          element={<h1>Gestión de Cargos - Próximamente</h1>}
+        />
       </Routes>
     </Router>
   );

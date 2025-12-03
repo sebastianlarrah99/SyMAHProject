@@ -1,15 +1,18 @@
 const Trabajo = require("../models/Trabajo");
 const TrabajosXCliente = require("../models/TrabajosXCliente");
 const EmpleadosXTrabajo = require("../models/EmpleadosXTrabajo");
+const RegistroHoras = require("../models/RegistroHoras");
+const Empleado = require("../models/Empleado");
+const Transaccion = require("../models/Transaccion"); // Asegúrate de tener el modelo Transaccion
 
 // Obtener todos los trabajos
 exports.obtenerTodos = async (req, res) => {
   try {
-    const trabajos = await Trabajo.find(); // Eliminar el populate de campos inexistentes
+    const trabajos = await Trabajo.find().populate("cliente", "nombre");
     res.status(200).json(trabajos);
   } catch (error) {
-    console.error("Error en obtenerTodos:", error);
-    res.status(500).json({ message: "Error al obtener los trabajos", error });
+    console.error("Error al obtener los trabajos:", error);
+    res.status(500).json({ mensaje: "Error al obtener los trabajos" });
   }
 };
 
@@ -221,20 +224,28 @@ exports.obtenerEmpleados = async (req, res) => {
   }
 };
 
-// Obtener transacciones relacionadas con un trabajo
+// Obtener transacciones relacionadas con un trabajo o empleado
 exports.obtenerTransacciones = async (req, res) => {
   try {
-    const trabajo = await Trabajo.findById(req.params.id).populate(
-      "transacciones"
-    );
-    if (!trabajo) {
-      return res.status(404).json({ message: "Trabajo no encontrado" });
+    const { id } = req.params;
+    const transacciones = await Transaccion.find({
+      actor: id, // Asegurarse de que el ID del actor sea el correcto
+      actorTipo: { $in: ["Trabajo", "Empleado"] }, // Permitir tanto trabajos como empleados
+    });
+
+    if (!transacciones || transacciones.length === 0) {
+      return res.status(200).json({
+        message: "No se encontraron transacciones asociadas.",
+      });
     }
-    res.status(200).json(trabajo.transacciones);
+
+    res.status(200).json(transacciones);
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error al obtener transacciones del trabajo", error });
+    console.error("Error al obtener transacciones:", error);
+    res.status(500).json({
+      message: "Error al obtener transacciones.",
+      error,
+    });
   }
 };
 
@@ -256,8 +267,8 @@ exports.obtenerEstadisticasGenerales = async (req, res) => {
 // Obtener trabajos pendientes
 exports.obtenerPendientes = async (req, res) => {
   try {
-    const trabajos = await Trabajo.find({ estado: "pendiente" });
-    res.status(200).json(trabajos);
+    const pendientes = await Trabajo.find({ estado: "pendiente" });
+    res.status(200).json(pendientes);
   } catch (error) {
     res
       .status(500)
@@ -268,8 +279,8 @@ exports.obtenerPendientes = async (req, res) => {
 // Obtener trabajos en progreso
 exports.obtenerEnProgreso = async (req, res) => {
   try {
-    const trabajos = await Trabajo.find({ estado: "en progreso" });
-    res.status(200).json(trabajos);
+    const enProgreso = await Trabajo.find({ estado: "en progreso" });
+    res.status(200).json(enProgreso);
   } catch (error) {
     res
       .status(500)
@@ -280,11 +291,83 @@ exports.obtenerEnProgreso = async (req, res) => {
 // Obtener trabajos completados
 exports.obtenerCompletados = async (req, res) => {
   try {
-    const trabajos = await Trabajo.find({ estado: "completado" });
-    res.status(200).json(trabajos);
+    const completados = await Trabajo.find({ estado: "completado" });
+    res.status(200).json(completados);
   } catch (error) {
     res
       .status(500)
       .json({ message: "Error al obtener trabajos completados", error });
+  }
+};
+
+// Obtener trabajos activos
+exports.obtenerActivos = async (req, res) => {
+  try {
+    const activos = await Trabajo.find({ estado: "activo" });
+    res.status(200).json(activos);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error al obtener trabajos activos", error });
+  }
+};
+
+// Obtener horas registradas por trabajo y empleado
+exports.obtenerHorasPorTrabajo = async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log("ID del trabajo recibido:", id);
+
+    // Buscar las horas registradas relacionadas con el trabajo
+    const horasRegistradas = await RegistroHoras.find({ trabajo: id })
+      .populate("empleado", "nombre")
+      .populate("trabajo", "nombre");
+
+    console.log("Horas registradas encontradas:", horasRegistradas);
+
+    if (!horasRegistradas || horasRegistradas.length === 0) {
+      console.warn("No se encontraron horas registradas para este trabajo.");
+      return res.status(404).json({
+        message: "No se encontraron horas registradas para este trabajo.",
+      });
+    }
+
+    res.status(200).json(horasRegistradas);
+  } catch (error) {
+    console.error("Error al obtener las horas registradas por trabajo:", error);
+    res.status(500).json({
+      message: "Error al obtener las horas registradas por trabajo",
+      error,
+    });
+  }
+};
+
+// Actualizar ganancias de un trabajo
+exports.actualizarGanancias = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Buscar el trabajo por ID
+    const trabajo = await Trabajo.findById(id);
+    if (!trabajo) {
+      return res.status(404).json({ message: "Trabajo no encontrado" });
+    }
+
+    // Calcular las ganancias
+    trabajo.ganancias = trabajo.acumuladoPagos - trabajo.gastoManoObra;
+
+    // Guardar los cambios
+    await trabajo.save();
+
+    res.status(200).json({
+      message: "Ganancias actualizadas correctamente",
+      trabajo,
+    });
+  } catch (error) {
+    console.error("Error al actualizar las ganancias del trabajo:", error);
+    res.status(500).json({
+      message: "Error al actualizar las ganancias del trabajo",
+      error: error.message || error,
+    });
   }
 };
