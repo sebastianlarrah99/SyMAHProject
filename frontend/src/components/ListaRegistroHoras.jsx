@@ -37,13 +37,18 @@ function EmployeeHoursModal({ empleadoId, onClose }) {
         setSaldoActual(empleadoResponse.data.saldo);
 
         // Obtener total cobrado en el mes (transacciones de pago)
+        const mesFormateado = mes.toString().padStart(2, "0"); // Asegurar dos dígitos
         const pagosResponse = await axios.get(
-          `http://localhost:4000/api/transacciones/buscar/por-empleado/${empleadoId}?mes=${mes}&anio=${anio}`
+          `http://localhost:4000/api/transacciones/buscar/por-empleado/${empleadoId}?mes=${mesFormateado}&anio=${anio}`
         );
-        const totalPagos = pagosResponse.data.reduce(
-          (acc, transaccion) => acc + transaccion.monto,
-          0
+        console.log(
+          "Transacciones devueltas por el backend:",
+          pagosResponse.data
         );
+        const totalPagos = pagosResponse.data
+          .filter((transaccion) => transaccion.tipo === "pago") // Filtrar solo pagos
+          .reduce((acc, transaccion) => acc + transaccion.monto, 0);
+        console.log("Total cobrado calculado:", totalPagos);
         setTotalCobrado(totalPagos);
       } catch (error) {
         console.error("Error al obtener datos del empleado:", error);
@@ -57,27 +62,22 @@ function EmployeeHoursModal({ empleadoId, onClose }) {
 
   const handleDelete = async (id) => {
     try {
-      // Eliminar el registro de horas
-      await axios.delete(`http://localhost:4000/api/registro-horas/${id}`);
+      // Eliminar el registro de horas y obtener transacciones actualizadas
+      const mesFormateado = mes.toString().padStart(2, "0"); // Asegurar dos dígitos
+      const response = await axios.delete(
+        `http://localhost:4000/api/transacciones/${id}?mes=${mesFormateado}&anio=${anio}`
+      );
 
       // Actualizar la lista de horarios después de eliminar
       setHorarios((prevHorarios) =>
         prevHorarios.filter((horario) => horario._id !== id)
       );
 
-      // Actualizar el saldo actual y el total cobrado
-      const empleadoResponse = await axios.get(
-        `http://localhost:4000/api/empleados/${empleadoId}`
-      );
-      setSaldoActual(empleadoResponse.data.saldo);
-
-      const pagosResponse = await axios.get(
-        `http://localhost:4000/api/transacciones/buscar/por-empleado/${empleadoId}?mes=${mes}&anio=${anio}`
-      );
-      const totalPagos = pagosResponse.data.reduce(
-        (acc, transaccion) => acc + transaccion.monto,
-        0
-      );
+      // Actualizar el total cobrado con las transacciones actualizadas
+      const transaccionesActualizadas = response.data.transacciones;
+      const totalPagos = transaccionesActualizadas
+        .filter((transaccion) => transaccion.tipo === "pago") // Filtrar solo pagos
+        .reduce((acc, transaccion) => acc + transaccion.monto, 0);
       setTotalCobrado(totalPagos);
 
       alert("Registro eliminado correctamente.");

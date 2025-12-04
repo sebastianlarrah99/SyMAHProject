@@ -12,15 +12,21 @@ function Transaccion() {
   const [detalleTransaccion, setDetalleTransaccion] = useState(null);
   const [transaccionAEliminar, setTransaccionAEliminar] = useState(null);
   const [isRegistroModalOpen, setIsRegistroModalOpen] = useState(false);
+  const [yearFiltro, setYearFiltro] = useState("");
+  const [monthFiltro, setMonthFiltro] = useState("");
 
   useEffect(() => {
     const fetchTransacciones = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:4000/api/transacciones"
-        );
+        let url = "http://localhost:4000/api/transacciones";
+        if (yearFiltro) {
+          url += `?year=${yearFiltro}`;
+          if (monthFiltro) {
+            url += `&month=${monthFiltro}`;
+          }
+        }
 
-        // Obtener nombres de actores
+        const response = await axios.get(url);
         const transaccionesConNombres = await Promise.all(
           response.data.map(async (transaccion) => {
             let actorNombre = "";
@@ -54,11 +60,15 @@ function Transaccion() {
     };
 
     fetchTransacciones();
-  }, []);
+  }, [yearFiltro, monthFiltro]);
 
   const confirmarEliminacion = async () => {
     if (transaccionAEliminar) {
       try {
+        const transaccionEliminada = transacciones.find(
+          (transaccion) => transaccion._id === transaccionAEliminar
+        );
+
         await axios.delete(
           `http://localhost:4000/api/transacciones/${transaccionAEliminar}`
         );
@@ -68,6 +78,20 @@ function Transaccion() {
           )
         );
         setTransaccionAEliminar(null);
+
+        console.log("Transacción eliminada:", transaccionEliminada);
+        if (
+          transaccionEliminada &&
+          transaccionEliminada.actorTipo === "Trabajo"
+        ) {
+          console.log(
+            "Actualizando ganancias para el trabajo:",
+            transaccionEliminada.actor
+          );
+          await axios.put(
+            `http://localhost:4000/api/trabajos/${transaccionEliminada.actor}/actualizar-ganancias`
+          );
+        }
       } catch (error) {
         console.error("Error al eliminar la transacción:", error);
       }
@@ -161,6 +185,42 @@ function Transaccion() {
         title="Gestión de Transacciones"
         description="Administra las transacciones financieras, incluyendo ingresos y egresos."
       >
+        <div className="filter-container">
+          <label htmlFor="yearFiltro">Año:</label>
+          <select
+            id="yearFiltro"
+            value={yearFiltro}
+            onChange={(e) => setYearFiltro(e.target.value)}
+            placeholder="Ingrese el año"
+          >
+            <option value="">Todos</option>
+            <option value="2025">2025</option>
+            <option value="2026">2026</option>
+            <option value="2027">2027</option>
+            <option value="2028">2028</option>
+          </select>
+
+          <label htmlFor="monthFiltro">Mes:</label>
+          <select
+            id="monthFiltro"
+            value={monthFiltro}
+            onChange={(e) => setMonthFiltro(e.target.value)}
+          >
+            <option value="">Todos</option>
+            <option value="01">Enero</option>
+            <option value="02">Febrero</option>
+            <option value="03">Marzo</option>
+            <option value="04">Abril</option>
+            <option value="05">Mayo</option>
+            <option value="06">Junio</option>
+            <option value="07">Julio</option>
+            <option value="08">Agosto</option>
+            <option value="09">Septiembre</option>
+            <option value="10">Octubre</option>
+            <option value="11">Noviembre</option>
+            <option value="12">Diciembre</option>
+          </select>
+        </div>
         <DataTable headers={headers} data={data} />
       </Card>
       <button

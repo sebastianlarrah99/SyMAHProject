@@ -42,10 +42,31 @@ function ModificarEmpleadoModal({ empleado, onClose, onSuccess }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validar datos antes de enviar
+    if (!formData.nombre || !formData.cargo) {
+      alert("Por favor, complete todos los campos obligatorios.");
+      return;
+    }
+
+    // Convertir el nombre del cargo al ID correspondiente
+    const cargoSeleccionado = cargos.find(
+      (cargo) => cargo.nombre === formData.cargo
+    );
+    if (!cargoSeleccionado) {
+      alert("El cargo seleccionado no es válido.");
+      return;
+    }
+
+    const payload = {
+      ...formData,
+      cargo: cargoSeleccionado._id, // Enviar el ID del cargo
+    };
+
     try {
       await axios.put(
         `http://localhost:4000/api/empleados/${empleado._id}`,
-        formData
+        payload
       );
       onSuccess();
       onClose();

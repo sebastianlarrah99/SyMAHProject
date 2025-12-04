@@ -8,7 +8,24 @@ const Pago = require("../models/Pago");
 // Obtener todas las transacciones
 exports.obtenerTodas = async (req, res) => {
   try {
-    const transacciones = await Transaccion.find();
+    const { year, month } = req.query;
+    let filtro = {};
+
+    if (year) {
+      filtro.fecha = {
+        $gte: new Date(`${year}-01-01`),
+        $lte: new Date(`${year}-12-31`),
+      };
+    }
+
+    if (year && month) {
+      const inicioMes = new Date(`${year}-${month}-01`);
+      const finMes = new Date(`${year}-${month}-01`);
+      finMes.setMonth(finMes.getMonth() + 1);
+      filtro.fecha = { $gte: inicioMes, $lt: finMes };
+    }
+
+    const transacciones = await Transaccion.find(filtro);
     res.status(200).json(transacciones);
   } catch (error) {
     res
@@ -131,7 +148,24 @@ exports.eliminar = async (req, res) => {
       }
     }
 
-    res.status(200).json({ message: "Transacción eliminada correctamente" });
+    // Obtener las transacciones actualizadas del empleado
+    const { mes, anio } = req.query;
+    let filtro = { empleado: actor };
+
+    if (mes && anio) {
+      const mesFormateado = mes.padStart(2, "0"); // Asegurar que el mes tenga dos dígitos
+      filtro.fecha = {
+        $gte: new Date(`${anio}-${mesFormateado}-01T00:00:00.000Z`),
+        $lte: new Date(`${anio}-${mesFormateado}-31T23:59:59.999Z`),
+      };
+    }
+
+    const transaccionesActualizadas = await Transaccion.find(filtro);
+
+    res.status(200).json({
+      message: "Transacción eliminada correctamente",
+      transacciones: transaccionesActualizadas,
+    });
   } catch (error) {
     console.error("Error al eliminar la transacción:", error);
     res
@@ -169,11 +203,26 @@ exports.buscarPorCliente = async (req, res) => {
 // Buscar transacciones por empleado
 exports.buscarPorEmpleado = async (req, res) => {
   try {
-    const transacciones = await Transaccion.find({
-      empleado: req.params.empleadoId,
-    });
+    const { mes, anio } = req.query;
+    let filtro = { empleado: req.params.empleadoId };
+
+    if (mes && anio) {
+      const mesFormateado = mes.padStart(2, "0"); // Asegurar que el mes tenga dos dígitos
+      filtro.fecha = {
+        $gte: new Date(`${anio}-${mesFormateado}-01T00:00:00.000Z`),
+        $lte: new Date(`${anio}-${mesFormateado}-31T23:59:59.999Z`),
+      };
+    }
+
+    console.log("Parámetros recibidos:", { mes, anio });
+    console.log("Filtro generado:", filtro);
+
+    const transacciones = await Transaccion.find(filtro);
+    console.log("Transacciones encontradas:", transacciones);
+
     res.status(200).json(transacciones);
   } catch (error) {
+    console.error("Error al buscar transacciones por empleado:", error);
     res
       .status(500)
       .json({ message: "Error al buscar transacciones por empleado", error });

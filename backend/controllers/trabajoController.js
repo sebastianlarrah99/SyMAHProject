@@ -8,7 +8,8 @@ const Transaccion = require("../models/Transaccion"); // Asegúrate de tener el 
 // Obtener todos los trabajos
 exports.obtenerTodos = async (req, res) => {
   try {
-    const trabajos = await Trabajo.find().populate("cliente", "nombre");
+    const filtro = req.query.estado ? { estado: req.query.estado } : {};
+    const trabajos = await Trabajo.find(filtro).populate("cliente", "nombre");
     res.status(200).json(trabajos);
   } catch (error) {
     console.error("Error al obtener los trabajos:", error);
@@ -346,12 +347,18 @@ exports.obtenerHorasPorTrabajo = async (req, res) => {
 exports.actualizarGanancias = async (req, res) => {
   try {
     const { id } = req.params;
+    console.log("ID del trabajo recibido para actualizar ganancias:", id);
 
     // Buscar el trabajo por ID
     const trabajo = await Trabajo.findById(id);
     if (!trabajo) {
+      console.error("Trabajo no encontrado para el ID:", id);
       return res.status(404).json({ message: "Trabajo no encontrado" });
     }
+
+    console.log("Ganancias antes de actualizar:", trabajo.ganancias);
+    console.log("Acumulado de pagos:", trabajo.acumuladoPagos);
+    console.log("Gasto de mano de obra:", trabajo.gastoManoObra);
 
     // Calcular las ganancias
     trabajo.ganancias = trabajo.acumuladoPagos - trabajo.gastoManoObra;

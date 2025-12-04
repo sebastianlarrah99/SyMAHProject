@@ -64,4 +64,7 @@ router.get("/estado/en-progreso", trabajoController.obtenerEnProgreso);
 router.get("/estado/completados", trabajoController.obtenerCompletados);
 router.get("/estado/activos", trabajoController.obtenerActivos);
 
+// PUT - Actualizar ganancias de un trabajo
+router.put("/:id/actualizar-ganancias", trabajoController.actualizarGanancias);
+
 module.exports = router;

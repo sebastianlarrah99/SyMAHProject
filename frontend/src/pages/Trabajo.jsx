@@ -15,11 +15,14 @@ function Trabajo() {
   const [isRegistroModalOpen, setIsRegistroModalOpen] = useState(false);
   const [trabajoAModificar, setTrabajoAModificar] = useState(null);
   const [trabajoTransacciones, setTrabajoTransacciones] = useState(null);
+  const [estadoFiltro, setEstadoFiltro] = useState("activo"); // Estado por defecto
 
   const fetchTrabajos = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/api/trabajos");
-      console.log("Datos recibidos de /api/trabajos:", response.data);
+      const url = estadoFiltro
+        ? `http://localhost:4000/api/trabajos?estado=${estadoFiltro}`
+        : `http://localhost:4000/api/trabajos`;
+      const response = await axios.get(url);
       setTrabajos(response.data || []);
     } catch (error) {
       console.error("Error al obtener los trabajos:", error);
@@ -29,7 +32,7 @@ function Trabajo() {
 
   useEffect(() => {
     fetchTrabajos();
-  }, []);
+  }, [estadoFiltro]);
 
   const confirmarEliminacion = async () => {
     if (trabajoAEliminar) {
@@ -81,6 +84,7 @@ function Trabajo() {
     }).format(value);
   };
 
+  const estadosTrabajo = ["pendiente", "en progreso", "completado", "activo"]; // Estados definidos en el modelo
   const headers = [
     "Trabajo",
     "Estado",
@@ -141,6 +145,20 @@ function Trabajo() {
         title="Gestión de Trabajos"
         description="Administra la información de los trabajos, incluyendo sus detalles y estado."
       >
+        <div className="filter-container">
+          <label htmlFor="estadoFiltro">Filtrar por estado:</label>
+          <select
+            id="estadoFiltro"
+            value={estadoFiltro}
+            onChange={(e) => setEstadoFiltro(e.target.value)}
+          >
+            {estadosTrabajo.map((estado) => (
+              <option key={estado} value={estado}>
+                {estado}
+              </option>
+            ))}
+          </select>
+        </div>
         <DataTable headers={headers} data={data} />
       </Card>
       <button

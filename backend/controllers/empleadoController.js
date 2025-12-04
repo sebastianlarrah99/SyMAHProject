@@ -99,6 +99,21 @@ exports.crear = async (req, res) => {
 // Actualizar empleado existente
 exports.actualizar = async (req, res) => {
   try {
+    // Validar datos antes de actualizar
+    if (!req.body.nombre || !req.body.cargo) {
+      return res
+        .status(400)
+        .json({ message: "Nombre y cargo son obligatorios" });
+    }
+
+    // Verificar que el cargo existe
+    const cargoExiste = await Cargo.findById(req.body.cargo);
+    if (!cargoExiste) {
+      return res
+        .status(400)
+        .json({ message: "El cargo proporcionado no existe" });
+    }
+
     const empleadoActualizado = await Empleado.findByIdAndUpdate(
       req.params.id,
       req.body,
@@ -109,6 +124,7 @@ exports.actualizar = async (req, res) => {
     }
     res.status(200).json(empleadoActualizado);
   } catch (error) {
+    console.error("Error al actualizar el empleado:", error);
     res.status(500).json({ message: "Error al actualizar el empleado", error });
   }
 };
