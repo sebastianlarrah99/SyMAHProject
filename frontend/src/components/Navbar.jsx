@@ -1,14 +1,23 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import "../styles/Navbar.css";
+import { FaBars } from "react-icons/fa"; // Icono de tres líneas
 
 const Navbar = () => {
   const location = useLocation();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
 
   return (
     <nav className="navbar">
       <div className="navbar-logo">SYMAH</div>
-      <ul className="navbar-links">
+      <button className="navbar-toggle" onClick={toggleMenu}>
+        <FaBars />
+      </button>
+      <ul className={`navbar-links ${isMenuOpen ? "show" : ""}`}>
         <li className={location.pathname === "/" ? "active" : ""}>
           <Link to="/">Inicio</Link>
         </li>
