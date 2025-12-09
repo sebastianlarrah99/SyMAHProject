@@ -7,7 +7,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 80px;
+  height: 100px;
   padding: 0;
   background-color: #333;
   color: #fff;
@@ -18,7 +18,7 @@
   font-size: 24px;
   font-weight: bold;
   color: #d1b442;
-  margin: 0 20px;
+  margin: 20px;
 }
 
 .navbar-links {
@@ -68,45 +68,62 @@
   background-color: #d1b442;
   padding: 30px 20px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
-  height: 40px;
+  height: 50px;
 }
 
 .navbar-links li.active a {
   color: #333;
 }
 
+.navbar img {
+  height: 70px;
+  margin: 10px;
+  transition: filter 0.3s ease-in-out;
+}
+
+.navbar img:hover {
+  animation: neon-effect 2s infinite;
+}
+
 /* Estilos para el botón de menú */
 .navbar-toggle {
+  height: 100px;
   z-index: 101;
   position: absolute;
   right: 25px;
-  margin-top: 30px;
-  transform: translateY(-90%);
+  margin-top: 20px;
+  transform: translateY(-10%);
   background-color: #333;
   color: #fff;
   border: none;
   cursor: pointer;
   font-size: 20px;
-  display: none; /* Oculto por defecto */
+  display: none;
   align-items: center;
   justify-content: center;
   transition: 0.5s ease;
   background-color: #333;
+  transition: 0.3s ease-in-out;
 }
 
-/* Estilos para la lista desplegable */
-
-/* Ajustar animación suave para el menú desplegable */
 @media (max-width: 768px) {
   .navbar {
     flex-direction: column;
     align-items: flex-start;
     padding: 10px;
-    height: auto;
+    height: 100px;
+  }
+  .navbar img {
+    height: 70px;
+    margin: 0px;
+    transition: filter 0.3s ease-in-out;
   }
 
   .navbar-toggle {
-    display: flex; /* Visible solo en móviles */
+    display: flex;
+    right: 25px;
+    margin-top: 20px;
+    transform: translateY(-20%);
   }
 
   .navbar-links {
@@ -118,31 +135,35 @@
     max-height: 0;
     opacity: 0;
     overflow: hidden;
-    top: 55px;
+    top: 120px;
     left: 0;
     width: 100%;
+    height: 100%;
     background-color: #333;
     color: #fff;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     z-index: 100;
-    transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out;
+    transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+      opacity 0.5s ease-in-out;
   }
 
   .navbar-links.show {
-    max-height: 400px; /* Altura máxima para el menú desplegable */
+    max-height: 400px;
     opacity: 1;
     overflow: visible;
     display: flex;
     flex-direction: column;
     position: absolute;
-    top: 55px;
+    top: 120px;
     left: 0;
     width: 100%;
+    height: 100%;
     background-color: #333;
     color: #fff;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     z-index: 100;
-    transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out;
+    transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+      opacity 0.5s ease-in-out; /* Mejora de la animación */
   }
 
   .navbar-links li {

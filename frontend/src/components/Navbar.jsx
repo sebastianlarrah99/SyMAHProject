@@ -13,7 +13,9 @@ const Navbar = () => {
 
   return (
     <nav className="navbar">
-      <div className="navbar-logo">SYMAH</div>
+      <div className="navbar-logo">
+        <img src="/Gemini_Generated_Image_mvfdpvmvfdpvmvfd-removebg-preview.png" />
+      </div>
       <button className="navbar-toggle" onClick={toggleMenu}>
         <FaBars />
       </button>

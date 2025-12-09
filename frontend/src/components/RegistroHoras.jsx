@@ -150,62 +150,71 @@ function RegisterHoursModal({ empleadoId, onClose, onSuccess }) {
 
   return (
     <Modal onClose={onClose}>
-      <div className="register-hours-modal">
+      <div className="modal-content">
         <h2>Registrar Horas</h2>
+
         <form onSubmit={handleSubmit}>
-          <label>
-            Fecha:
-            <input
-              type="date"
-              name="fecha"
-              value={formData.fecha}
-              onChange={handleInputChange}
-              required
-            />
-          </label>
-          <label>
-            Hora de Inicio:
-            <input
-              type="time"
-              name="horaInicio"
-              value={formData.horaInicio}
-              onChange={handleInputChange}
-              required
-            />
-          </label>
-          <label>
-            Hora de Fin:
-            <input
-              type="time"
-              name="horaFin"
-              value={formData.horaFin}
-              onChange={handleInputChange}
-              required
-            />
-          </label>
-          <label>
-            Trabajo:
-            <select
-              name="trabajoNombre"
-              value={formData.trabajoNombre}
-              onChange={handleInputChange}
-              required
-            >
-              <option value="">Selecciona un trabajo</option>
-              {trabajos.map((trabajo) => (
-                <option key={trabajo._id} value={trabajo.titulo}>
-                  {trabajo.titulo}
-                </option>
-              ))}
-            </select>
-          </label>
+          <div className="form-group">
+            <label>
+              Fecha
+              <input
+                type="date"
+                name="fecha"
+                value={formData.fecha}
+                onChange={handleInputChange}
+                required
+              />
+            </label>
+          </div>
+          <div className="form-group">
+            <label>
+              Hora de Inicio
+              <input
+                type="time"
+                name="horaInicio"
+                value={formData.horaInicio}
+                onChange={handleInputChange}
+                required
+              />
+            </label>{" "}
+          </div>
+          <div className="form-group">
+            <label>
+              Hora de Fin
+              <input
+                type="time"
+                name="horaFin"
+                value={formData.horaFin}
+                onChange={handleInputChange}
+                required
+              />
+            </label>
+          </div>
+          <div className="form-group">
+            <label>
+              Trabajo
+              <select
+                name="trabajoNombre"
+                value={formData.trabajoNombre}
+                onChange={handleInputChange}
+                required
+              >
+                <option value="">Selecciona un trabajo</option>
+                {trabajos.map((trabajo) => (
+                  <option key={trabajo._id} value={trabajo.titulo}>
+                    {trabajo.titulo}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
           <p>Tarifa por Hora: ${tarifa.toFixed(2)}</p>
           <p>Monto Calculado: ${montoCalculado.toFixed(2)}</p>
           <button type="submit">Registrar</button>
+          <button type="button" onClick={openHoursModal}>
+            Consultar Horarios
+          </button>
         </form>
-        <button type="button" onClick={openHoursModal}>
-          Consultar Horarios
-        </button>
       </div>
       {isHoursModalOpen && (
         <EmployeeHoursModal empleadoId={empleadoId} onClose={closeHoursModal} />

@@ -71,54 +71,59 @@ function ConfigModal({ onClose, onSuccess = () => {} }) {
       <div className="modal-content">
         <h3>Configuración de Cargos</h3>
         <form onSubmit={handleSubmit}>
-          <div className="mode">
-            <label>Modo:</label>
-            <select value={modo} onChange={handleModoChange}>
-              <option value="crear">Crear Nuevo Cargo</option>
-              <option value="modificar">Modificar Cargo Existente</option>
-            </select>
-          </div>
-
-          {modo === "modificar" && (
-            <div className="form-group">
-              <label>Seleccionar Cargo:</label>
-              <select value={cargoSeleccionado} onChange={handleCargoChange}>
-                <option value="">-- Seleccionar --</option>
-                {cargos.map((cargo) => (
-                  <option key={cargo._id} value={cargo._id}>
-                    {cargo.nombre}
-                  </option>
-                ))}
+          <div className="modal-content">
+            <label>
+              Modo
+              <select value={modo} onChange={handleModoChange}>
+                <option value="crear">Crear Nuevo Cargo</option>
+                <option value="modificar">Modificar Cargo Existente</option>
               </select>
+            </label>{" "}
+            {modo === "modificar" && (
+              <label>
+                Seleccionar Cargo
+                <select value={cargoSeleccionado} onChange={handleCargoChange}>
+                  <option value="">-- Seleccionar --</option>
+                  {cargos.map((cargo) => (
+                    <option key={cargo._id} value={cargo._id}>
+                      {cargo.nombre}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
+            <div className="form-group">
+              <label>
+                Nombre
+                <input
+                  type="text"
+                  value={nombre}
+                  onChange={(e) => setNombre(e.target.value)}
+                  required
+                />
+              </label>
             </div>
-          )}
-
-          <div className="form-group">
-            <label>Nombre:</label>
-            <input
-              type="text"
-              value={nombre}
-              onChange={(e) => setNombre(e.target.value)}
-              required
-            />
-            <label>Pago por Hora:</label>
-            <input
-              type="number"
-              value={pagoPorHora}
-              onChange={(e) => setPagoPorHora(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="modal-actions">
-            <button type="submit" className="btn confirm">
-              Guardar
-            </button>
-            <button type="button" className="btn cancel" onClick={onClose}>
-              Cancelar
-            </button>
+            <div className="form-group">
+              <label>
+                Pago por Hora
+                <input
+                  type="number"
+                  value={pagoPorHora}
+                  onChange={(e) => setPagoPorHora(e.target.value)}
+                  required
+                />
+              </label>
+            </div>
           </div>
         </form>
+        <div className="modal-actions">
+          <button type="submit" className="btn confirm">
+            Guardar
+          </button>
+          <button type="button" className="btn cancel" onClick={onClose}>
+            Cancelar
+          </button>
+        </div>
       </div>
     </Modal>
   );

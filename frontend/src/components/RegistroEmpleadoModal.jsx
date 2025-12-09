@@ -70,54 +70,62 @@ function RegistroEmpleadoModal({ onClose, onSuccess }) {
         <h3>Registrar Nuevo Empleado</h3>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="nombre">Nombre</label>
-            <input
-              type="text"
-              id="nombre"
-              name="nombre"
-              value={formData.nombre}
-              onChange={handleChange}
-              required
-            />
+            <label htmlFor="nombre">
+              Nombre
+              <input
+                type="text"
+                id="nombre"
+                name="nombre"
+                value={formData.nombre}
+                onChange={handleChange}
+                required
+              />
+            </label>
           </div>
           <div className="form-group">
-            <label htmlFor="cargo">Cargo</label>
-            <select
-              id="cargo"
-              name="cargo"
-              value={formData.cargo}
-              onChange={handleChange}
-              required
-            >
-              {cargos.map((cargo) => (
-                <option key={cargo._id} value={cargo.nombre}>
-                  {cargo.nombre}
-                </option>
-              ))}
-            </select>
+            <label htmlFor="cargo">
+              Cargo
+              <select
+                id="cargo"
+                name="cargo"
+                value={formData.cargo}
+                onChange={handleChange}
+                required
+              >
+                {cargos.map((cargo) => (
+                  <option key={cargo._id} value={cargo.nombre}>
+                    {cargo.nombre}
+                  </option>
+                ))}
+              </select>
+            </label>
           </div>
           <div className="form-group">
-            <label htmlFor="estado">Estado</label>
-            <select
-              id="estado"
-              name="estado"
-              value={formData.estado}
-              onChange={handleChange}
-            >
-              <option value="Activo">Activo</option>
-              <option value="Inactivo">Inactivo</option>
-            </select>
+            <label htmlFor="estado">
+              Estado
+              <select
+                id="estado"
+                name="estado"
+                value={formData.estado}
+                onChange={handleChange}
+              >
+                <option value="Activo">Activo</option>
+                <option value="Inactivo">Inactivo</option>
+              </select>
+            </label>
           </div>
           <div className="form-group">
-            <label htmlFor="saldo">Saldo</label>
-            <input
-              type="number"
-              id="saldo"
-              name="saldo"
-              value={formData.saldo}
-              onChange={handleChange}
-              disabled
-            />
+            <label htmlFor="saldo">
+              Saldo
+              <input
+                type="number"
+                id="saldo"
+                name="saldo"
+                value={formData.saldo}
+                onChange={handleChange}
+                disabled
+              />
+            </label>
           </div>
           <div className="modal-actions">
             <button type="button" className="btn cancel" onClick={onClose}>

@@ -1,5 +1,5 @@
 .data-table {
-  margin-top: 20px;
+  margin-top: 10px;
   overflow-x: auto;
 }
 
@@ -12,10 +12,11 @@ table {
   color: #333;
   border-radius: 5px;
   overflow: hidden;
+  font-size: 13px;
 }
 
 thead {
-  background-color: #333;
+  background-color: #d1b442;
   color: #fff;
 }
 
@@ -23,8 +24,7 @@ th,
 td {
   padding: 10px;
   text-align: center;
-
-  min-width: 150px;
+  min-width: 40px;
 }
 
 th {
@@ -32,11 +32,11 @@ th {
 }
 
 tr:nth-child(even) {
-  background-color: #eeecec;
+  background-color: #f8e8aa;
 }
 
 .table-row {
-  transition: background-color 0.3s, color 0.3s;
+  transition: background-color 0.5s, color 0.5s;
   align-items: center;
   justify-content: center;
 }
@@ -50,7 +50,7 @@ tr:nth-child(even) {
   display: flex;
   justify-content: center;
   border-style: none;
-  gap: 10px; /* Añadido para separar los botones */
+  gap: 0px;
 }
 
 .btn {
@@ -59,7 +59,7 @@ tr:nth-child(even) {
   cursor: pointer;
   font-size: 18px;
   padding: 5px;
-  transition: transform 0.2s;
+  transition: transform 0.3s ease in-out;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -68,7 +68,6 @@ tr:nth-child(even) {
 .btn:hover {
   transform: scale(1.1);
   color: #f5d863;
-  transition: transform 0.2s;
 }
 
 .btn.view {
@@ -90,7 +89,7 @@ tr:nth-child(even) {
   cursor: pointer;
   font-size: 18px !important;
   padding: 5px !important;
-  transition: transform 0.2s;
+  transition: transform 0.3s;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -104,4 +103,40 @@ tr:nth-child(even) {
 
 .btn.list {
   color: #272829;
+}
+
+/* Estilos responsivos para la tabla */
+@media (max-width: 768px) {
+  .data-table {
+    font-size: 10px;
+    overflow-x: auto; /* Permitir desplazamiento horizontal */
+  }
+
+  th,
+  td {
+    padding: 8px 4px;
+    min-width: 40px;
+  }
+
+  .action-buttons {
+    flex-direction: row;
+    gap: 2px;
+  }
+}
+
+@media (max-width: 480px) {
+  .data-table {
+    font-size: 12px;
+  }
+
+  th,
+  td {
+    padding: 5px;
+    min-width: 80px; /* Reducir el ancho mínimo de las celdas */
+  }
+
+  .btn {
+    font-size: 12px;
+    padding: 3px;
+  }
 }

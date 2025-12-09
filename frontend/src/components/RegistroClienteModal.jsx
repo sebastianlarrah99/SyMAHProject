@@ -56,48 +56,56 @@ function RegistroClienteModal({ cliente, onClose, onSuccess }) {
         <h3>{cliente ? "Modificar Cliente" : "Registrar Nuevo Cliente"}</h3>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="nombre">Nombre</label>
-            <input
-              type="text"
-              id="nombre"
-              name="nombre"
-              value={formData.nombre}
-              onChange={handleChange}
-              required
-            />
+            <label htmlFor="nombre">
+              Nombre
+              <input
+                type="text"
+                id="nombre"
+                name="nombre"
+                value={formData.nombre}
+                onChange={handleChange}
+                required
+              />
+            </label>
           </div>
           <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
+            <label htmlFor="email">
+              Email
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+            </label>
           </div>
           <div className="form-group">
-            <label htmlFor="direccion">Dirección</label>
-            <input
-              type="text"
-              id="direccion"
-              name="direccion"
-              value={formData.direccion}
-              onChange={handleChange}
-              required
-            />
+            <label htmlFor="direccion">
+              Dirección
+              <input
+                type="text"
+                id="direccion"
+                name="direccion"
+                value={formData.direccion}
+                onChange={handleChange}
+                required
+              />
+            </label>
           </div>
           <div className="form-group">
-            <label htmlFor="telefono">Teléfono</label>
-            <input
-              type="text"
-              id="telefono"
-              name="telefono"
-              value={formData.telefono}
-              onChange={handleChange}
-              required
-            />
+            <label htmlFor="telefono">
+              Teléfono
+              <input
+                type="text"
+                id="telefono"
+                name="telefono"
+                value={formData.telefono}
+                onChange={handleChange}
+                required
+              />
+            </label>
           </div>
           <div className="modal-actions">
             <button type="button" className="btn cancel" onClick={onClose}>

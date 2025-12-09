@@ -165,7 +165,7 @@ const Empleado = () => {
   const headers = ["Nombre", "Cargo", "Estado", "Acciones"];
   const data = empleados.map((empleado) => [
     empleado.nombre,
-    empleado.cargo?.nombre || "Sin cargo", // Mostrar el nombre del cargo o un valor predeterminado
+    empleado.cargo?.nombre || "Sin cargo",
     empleado.estado,
     <div className="action-buttons">
       <button
@@ -219,19 +219,21 @@ const Empleado = () => {
         title="Gestión de Empleados"
         description="Administra la información de los empleados, incluyendo sus datos personales y horarios."
       >
-        <div>
-          <label htmlFor="estadoFiltro">Filtrar por estado: </label>
-          <select
-            id="estadoFiltro"
-            value={estadoFiltro}
-            onChange={handleFilterChange}
-          >
-            <option value="activo">Activos</option>
-            <option value="inactivo">Inactivos</option>
-            <option value="">Todos</option>
-          </select>
-        </div>
         <DataTable headers={headers} data={data} />
+        <div className="filter-container">
+          <label htmlFor="estadoFiltro">
+            {" "}
+            <select
+              id="estadoFiltro"
+              value={estadoFiltro}
+              onChange={handleFilterChange}
+            >
+              <option value="activo">Activos</option>
+              <option value="inactivo">Inactivos</option>
+              <option value="">Todos</option>
+            </select>
+          </label>
+        </div>
       </Card>
       <button
         className="btn register"

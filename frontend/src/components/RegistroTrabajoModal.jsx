@@ -73,66 +73,76 @@ function RegistroTrabajoModal({ onClose, onSuccess, trabajoAModificar }) {
         </h3>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="titulo">Título</label>
-            <input
-              type="text"
-              id="titulo"
-              name="titulo"
-              value={formData.titulo}
-              onChange={handleChange}
-              required
-            />
+            <label htmlFor="titulo">
+              Título
+              <input
+                type="text"
+                id="titulo"
+                name="titulo"
+                value={formData.titulo}
+                onChange={handleChange}
+                required
+              />
+            </label>
           </div>
           <div className="form-group">
-            <label htmlFor="descripcion">Descripción</label>
-            <textarea
-              id="descripcion"
-              name="descripcion"
-              value={formData.descripcion}
-              onChange={handleChange}
-            />
+            <label htmlFor="descripcion">
+              Descripción
+              <textarea
+                id="descripcion"
+                name="descripcion"
+                value={formData.descripcion}
+                onChange={handleChange}
+              />
+            </label>
           </div>
           <div className="form-group">
-            <label htmlFor="estado">Estado</label>
-            <select
-              id="estado"
-              name="estado"
-              value={formData.estado}
-              onChange={handleChange}
-            >
-              <option value="pendiente">Pendiente</option>
-              <option value="en progreso">En Progreso</option>
-              <option value="completado">Completado</option>
-              <option value="activo">Activo</option>
-            </select>
+            <label htmlFor="estado">
+              Estado
+              <select
+                id="estado"
+                name="estado"
+                value={formData.estado}
+                onChange={handleChange}
+              >
+                <option value="pendiente">Pendiente</option>
+                <option value="en progreso">En Progreso</option>
+                <option value="completado">Completado</option>
+                <option value="activo">Activo</option>
+              </select>
+            </label>
           </div>
           <div className="form-group">
-            <label htmlFor="fechaInicio">Fecha de Inicio</label>
-            <input
-              type="date"
-              id="fechaInicio"
-              name="fechaInicio"
-              value={formData.fechaInicio}
-              onChange={handleChange}
-              required
-            />
+            <label htmlFor="fechaInicio">
+              Fecha de Inicio
+              <input
+                type="date"
+                id="fechaInicio"
+                name="fechaInicio"
+                value={formData.fechaInicio}
+                onChange={handleChange}
+                required
+              />
+            </label>
           </div>
           <div className="form-group">
-            <label htmlFor="cliente">Cliente</label>
-            <select
-              id="cliente"
-              name="cliente"
-              value={formData.cliente}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Seleccione un cliente</option>
-              {clientes.map((cliente) => (
-                <option key={cliente._id} value={cliente._id}>
-                  {cliente.nombre}
-                </option>
-              ))}
-            </select>
+            <label htmlFor="cliente">
+              Cliente
+              <select
+                id="cliente"
+                name="cliente"
+                value={formData.cliente}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Seleccione un cliente</option>
+                {clientes.map((cliente) => (
+                  <option key={cliente._id} value={cliente._id}>
+                    {cliente.nombre}
+                  </option>
+                ))}
+              </select>
+            </label>
           </div>
           <div className="modal-actions">
             <button type="button" className="btn cancel" onClick={onClose}>

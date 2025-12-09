@@ -7,6 +7,7 @@ import Empleado from "./pages/Empleado";
 import Trabajo from "./pages/Trabajo";
 import Cliente from "./pages/Cliente";
 import Transaccion from "./pages/Transaccion";
+import Card from "./components/Card";
 
 function App() {
   return (
@@ -17,8 +18,11 @@ function App() {
           path="/"
           element={
             <>
-              <h1>Bienvenido a la aplicación</h1>
-              <p>Selecciona una opción del menú para continuar</p>
+              <h1>Bienvenido a SYMAH</h1>
+              <img
+                id="flyer"
+                src="/Gemini_Generated_Image_mvfdpvmvfdpvmvfd-removebg-preview.png"
+              />
             </>
           }
         />

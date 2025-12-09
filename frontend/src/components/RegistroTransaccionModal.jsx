@@ -78,73 +78,83 @@ function RegistroTransaccionModal({ onClose, onSuccess, transaccion }) {
         <h3>Registrar Nueva Transacción</h3>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="monto">Monto</label>
-            <input
-              type="number"
-              id="monto"
-              name="monto"
-              value={formData.monto}
-              onChange={handleChange}
-              required
-            />
+            <label htmlFor="monto">
+              Monto
+              <input
+                type="number"
+                id="monto"
+                name="monto"
+                value={formData.monto}
+                onChange={handleChange}
+                required
+              />
+            </label>
           </div>
           <div className="form-group">
-            <label htmlFor="fecha">Fecha</label>
-            <input
-              type="date"
-              id="fecha"
-              name="fecha"
-              value={formData.fecha}
-              onChange={handleChange}
-              required
-            />
+            <label htmlFor="fecha">
+              Fecha
+              <input
+                type="date"
+                id="fecha"
+                name="fecha"
+                value={formData.fecha}
+                onChange={handleChange}
+                required
+              />
+            </label>
           </div>
           <div className="form-group">
-            <label htmlFor="actorTipo">Tipo de Actor</label>
-            <select
-              id="actorTipo"
-              name="actorTipo"
-              value={formData.actorTipo}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Seleccione un tipo</option>
-              <option value="Empleado">Empleado</option>
-              <option value="Trabajo">Trabajo</option>
-            </select>
+            <label htmlFor="actorTipo">
+              Tipo de Actor
+              <select
+                id="actorTipo"
+                name="actorTipo"
+                value={formData.actorTipo}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Seleccione un tipo</option>
+                <option value="Empleado">Empleado</option>
+                <option value="Trabajo">Trabajo</option>
+              </select>
+            </label>
           </div>
           <div className="form-group">
-            <label htmlFor="actor">Actor</label>
-            <select
-              id="actor"
-              name="actor"
-              value={formData.actor}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Seleccione un actor</option>
-              {formData.actorTipo === "Empleado" &&
-                actores.empleados.map((empleado) => (
-                  <option key={empleado._id} value={empleado._id}>
-                    {empleado.nombre}
-                  </option>
-                ))}
-              {formData.actorTipo === "Trabajo" &&
-                actores.trabajos.map((trabajo) => (
-                  <option key={trabajo._id} value={trabajo._id}>
-                    {trabajo.titulo}
-                  </option>
-                ))}
-            </select>
+            <label htmlFor="actor">
+              Actor
+              <select
+                id="actor"
+                name="actor"
+                value={formData.actor}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Seleccione un actor</option>
+                {formData.actorTipo === "Empleado" &&
+                  actores.empleados.map((empleado) => (
+                    <option key={empleado._id} value={empleado._id}>
+                      {empleado.nombre}
+                    </option>
+                  ))}
+                {formData.actorTipo === "Trabajo" &&
+                  actores.trabajos.map((trabajo) => (
+                    <option key={trabajo._id} value={trabajo._id}>
+                      {trabajo.titulo}
+                    </option>
+                  ))}
+              </select>
+            </label>
           </div>
           <div className="form-group">
-            <label htmlFor="descripcion">Descripción</label>
-            <textarea
-              id="descripcion"
-              name="descripcion"
-              value={formData.descripcion}
-              onChange={handleChange}
-            />
+            <label htmlFor="descripcion">
+              Descripción
+              <textarea
+                id="descripcion"
+                name="descripcion"
+                value={formData.descripcion}
+                onChange={handleChange}
+              />
+            </label>
           </div>
           <div className="modal-actions">
             <button type="button" className="btn cancel" onClick={onClose}>

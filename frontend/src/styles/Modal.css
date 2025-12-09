@@ -11,7 +11,6 @@
   z-index: 999;
 }
 
-/* Estilos del modal */
 .modal {
   position: fixed;
   top: 50%;
@@ -19,30 +18,30 @@
   transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
-  padding: 1.5rem;
+  padding: 24px;
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   color: #333;
-  max-width: 400px;
-  max-height: 600px;
   z-index: 1000;
-
+  padding: 24px;
+  max-width: none;
+  max-height: none;
   isolation: isolate;
 }
 
 #close-button {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 5px;
+  right: 5px;
   background: none;
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
-  background-color: #333;
-  color: #fff;
-  height: 50px;
-  width: 50px;
+  background-color: transparent;
+  color: #333;
+  height: 30px;
+  width: 30px;
   padding: 1px;
 }
 
@@ -50,33 +49,18 @@
   background-color: brown;
 }
 
-/* Estilos generales del modal */
-.modal {
-  display: flex;
-  flex-direction: column;
-  padding: 2.5rem;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  color: #333;
-  max-width: none;
-  max-height: none;
-}
-
 .modal button {
   padding: 10px 20px;
   margin: 5px 10px;
-
+  font-size: 18px; /* 1.3rem a px */
   border-radius: 4px;
-
-  font-size: 1.3rem;
   color: #fff;
   background-color: #d1b442;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  width: 300px;
+  width: 200px;
 }
 
 .modal button:hover {
@@ -95,7 +79,7 @@
 .modal ul li {
   padding: 0.5rem;
   background-color: #e9ecef;
-  border: 1px solid #ddd;
+  border: 0px solid #ddd;
   border-radius: 4px;
   margin-bottom: 0.5rem;
 }
@@ -104,68 +88,39 @@
 @keyframes modalFadeIn {
   from {
     opacity: 0;
-    transform: translate(-50%, -60%);
+    transform: translate(-50%, -60%) scale(0.9);
   }
   to {
     opacity: 1;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%) scale(1);
   }
 }
 
 @keyframes modalFadeOut {
   from {
     opacity: 1;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%) scale(1);
   }
   to {
     opacity: 0;
-    transform: translate(-50%, -60%);
+    transform: translate(-50%, -60%) scale(0.9);
   }
 }
 
 .modal {
-  animation: modalFadeIn 0.2s ease-out;
+  animation: modalFadeIn 0.3s ease-out;
 }
 
 .modal.closing {
-  animation: modalFadeOut 0.2s ease-in;
-}
-
-.modal-content {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-  padding: 20px;
+  animation: modalFadeOut 0.3s ease-in;
 }
 
 /* Centrar el título del modal */
 .modal-content h3 {
-  text-align: center;
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
-}
-
-/* Estilo para los labels y campos de entrada */
-.modal-content form div {
-  display: flex;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.modal-content form div label {
-  flex: 1;
-  text-align: left;
-  font-weight: bold;
-}
-
-.modal-content form div input,
-.modal-content form div select {
-  flex: 3;
-  padding: 10px;
-  margin: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  align-self: center;
+  font-size: 32px;
+  color: #333;
+  margin-bottom: 50px;
 }
 
 /* Ajustar las acciones del modal */
@@ -176,27 +131,63 @@
   margin-top: 1rem;
 }
 
-.modal form-group {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 15px;
-}
+/* Estilos responsivos para el modal */
+@media (max-width: 768px) {
+  .modal {
+    max-width: 90%;
+    padding: 5px;
+  }
 
-.filter-group {
-  margin: 5px;
-  padding: 10px;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  gap: 25px;
+  .modal button {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  .modal-content h3 {
+    font-size: 18px;
+  }
+
+  .modal-content form div label {
+    padding: 0;
+    font-size: 12px;
+  }
+
+  .modal-content form div input,
+  .modal-content form div select {
+    font-size: 10px;
+  }
+
+  .modal button {
+    max-width: 300px;
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+
+  #close-button {
+    height: 30px;
+    width: 30px;
+    font-size: 20px;
+  }
 }
-.filter-group select {
-  margin: 5px;
-  padding: 10px;
-  background-color: #fff;
-  color: #333;
-  border: none;
-  gap: 25px;
-  font-size: 1rem;
+@media (max-width: 480px) {
+  .modal {
+    padding: 10px;
+  }
+
+  .modal button {
+    font-size: 14px;
+  }
+
+  .modal-content h3 {
+    font-size: 16px;
+  }
+
+  .modal-content form div label {
+    font-size: 12px;
+  }
+
+  .modal-content form div input,
+  .modal-content form div select {
+    font-size: 12px;
+  }
 }

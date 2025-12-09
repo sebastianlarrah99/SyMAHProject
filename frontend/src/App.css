@@ -2,6 +2,12 @@ body {
   margin: 0;
   font-family: Arial, sans-serif;
   color: #333;
+  background-color: #222;
+}
+
+h1 {
+  color: #d1b442;
+  text-decoration: none;
 }
 
 #root {
@@ -14,18 +20,67 @@ body {
   text-align: center;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+#flyer {
+  transition: filter 0.3s ease-in-out;
+}
+
+#flyer:hover {
+  animation: neon-effect 2s infinite;
+}
+
+#logo {
+  transition: filter 0.3s ease-in-out;
+}
+
+#logo:hover {
+  animation: neon-effect 2s infinite;
 }
 
 @media (prefers-reduced-motion: no-preference) {
   a:nth-of-type(2) .logo {
     animation: logo-spin infinite 20s linear;
+  }
+}
+
+@keyframes intense-flash {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(2);
+  }
+}
+
+@keyframes gradual-brightness {
+  0% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.5);
+  }
+  100% {
+    filter: brightness(1);
+  }
+}
+
+@keyframes glow-image {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+  }
+  50% {
+    filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.8));
+  }
+}
+
+@keyframes neon-effect {
+  0%,
+  100% {
+    filter: brightness(1) drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+  }
+  50% {
+    filter: brightness(1.5) drop-shadow(0 0 20px rgba(255, 255, 255, 0.8));
   }
 }
 

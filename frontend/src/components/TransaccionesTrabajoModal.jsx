@@ -39,9 +39,9 @@ function TransaccionesTrabajoModal({ trabajoId, onClose }) {
       month: "2-digit",
       year: "2-digit",
     }),
-    new Intl.NumberFormat("es-MX", {
+    new Intl.NumberFormat("es-AR", {
       style: "currency",
-      currency: "MXN",
+      currency: "ARS",
     }).format(transaccion.monto),
 
     transaccion.descripcion || "Sin descripción",

@@ -145,21 +145,24 @@ function Trabajo() {
         title="Gestión de Trabajos"
         description="Administra la información de los trabajos, incluyendo sus detalles y estado."
       >
-        <div className="filter-container">
-          <label htmlFor="estadoFiltro">Filtrar por estado:</label>
-          <select
-            id="estadoFiltro"
-            value={estadoFiltro}
-            onChange={(e) => setEstadoFiltro(e.target.value)}
-          >
-            {estadosTrabajo.map((estado) => (
-              <option key={estado} value={estado}>
-                {estado}
-              </option>
-            ))}
-          </select>
-        </div>
         <DataTable headers={headers} data={data} />
+        <div className="filter-container">
+          <label htmlFor="estadoFiltro">
+            <select
+              name="estadoFiltro"
+              label="estadoFiltro"
+              id="estadoFiltro"
+              value={estadoFiltro}
+              onChange={(e) => setEstadoFiltro(e.target.value)}
+            >
+              {estadosTrabajo.map((estado) => (
+                <option key={estado} value={estado}>
+                  {estado}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
       </Card>
       <button
         className="btn register"

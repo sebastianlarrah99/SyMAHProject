@@ -185,43 +185,45 @@ function Transaccion() {
         title="Gestión de Transacciones"
         description="Administra las transacciones financieras, incluyendo ingresos y egresos."
       >
-        <div className="filter-container">
-          <label htmlFor="yearFiltro">Año:</label>
-          <select
-            id="yearFiltro"
-            value={yearFiltro}
-            onChange={(e) => setYearFiltro(e.target.value)}
-            placeholder="Ingrese el año"
-          >
-            <option value="">Todos</option>
-            <option value="2025">2025</option>
-            <option value="2026">2026</option>
-            <option value="2027">2027</option>
-            <option value="2028">2028</option>
-          </select>
-
-          <label htmlFor="monthFiltro">Mes:</label>
-          <select
-            id="monthFiltro"
-            value={monthFiltro}
-            onChange={(e) => setMonthFiltro(e.target.value)}
-          >
-            <option value="">Todos</option>
-            <option value="01">Enero</option>
-            <option value="02">Febrero</option>
-            <option value="03">Marzo</option>
-            <option value="04">Abril</option>
-            <option value="05">Mayo</option>
-            <option value="06">Junio</option>
-            <option value="07">Julio</option>
-            <option value="08">Agosto</option>
-            <option value="09">Septiembre</option>
-            <option value="10">Octubre</option>
-            <option value="11">Noviembre</option>
-            <option value="12">Diciembre</option>
-          </select>
-        </div>
         <DataTable headers={headers} data={data} />
+        <div className="filter-container">
+          <label htmlFor="yearFiltro">
+            <select
+              id="yearFiltro"
+              value={yearFiltro}
+              onChange={(e) => setYearFiltro(e.target.value)}
+              placeholder="Ingrese el año"
+            >
+              <option value="">Todos</option>
+              <option value="2025">2025</option>
+              <option value="2026">2026</option>
+              <option value="2027">2027</option>
+              <option value="2028">2028</option>
+            </select>
+          </label>
+
+          <label htmlFor="monthFiltro">
+            <select
+              id="monthFiltro"
+              value={monthFiltro}
+              onChange={(e) => setMonthFiltro(e.target.value)}
+            >
+              <option value="">Todos</option>
+              <option value="01">Enero</option>
+              <option value="02">Febrero</option>
+              <option value="03">Marzo</option>
+              <option value="04">Abril</option>
+              <option value="05">Mayo</option>
+              <option value="06">Junio</option>
+              <option value="07">Julio</option>
+              <option value="08">Agosto</option>
+              <option value="09">Septiembre</option>
+              <option value="10">Octubre</option>
+              <option value="11">Noviembre</option>
+              <option value="12">Diciembre</option>
+            </select>
+          </label>
+        </div>
       </Card>
       <button
         className="btn register"
