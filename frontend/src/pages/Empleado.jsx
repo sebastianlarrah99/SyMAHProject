@@ -18,6 +18,8 @@ import {
   FaList,
 } from "react-icons/fa";
 import "../styles/ToggleSwitch.css"; // Importar estilos para el switch
+
+import "../styles/EmpleadoTransitions.css";
 import DataTable from "../components/DataTable";
 import ConfigModal from "../components/ConfigModal";
 
@@ -65,7 +67,7 @@ const Empleado = () => {
         await axios.delete(
           `http://localhost:4000/api/empleados/${empleadoAEliminar}`
         );
-        setEmpleados(
+        setEmpleados((empleados) =>
           empleados.filter((empleado) => empleado._id !== empleadoAEliminar)
         );
         setEmpleadoAEliminar(null);
@@ -81,13 +83,7 @@ const Empleado = () => {
       await axios.put(`http://localhost:4000/api/empleados/inactivar/${id}`, {
         estado: nuevoEstado,
       });
-
-      // Actualizar el estado localmente para reflejar el cambio inmediatamente
-      setEmpleados((prevEmpleados) =>
-        prevEmpleados.map((empleado) =>
-          empleado._id === id ? { ...empleado, estado: nuevoEstado } : empleado
-        )
-      );
+      fetchEmpleados();
     } catch (error) {
       console.error("Error al cambiar el estado del empleado:", error);
     }
@@ -218,7 +214,8 @@ const Empleado = () => {
       <Card
         title="Gestión de Empleados"
         description="Administra la información de los empleados, incluyendo sus datos personales y horarios."
-      >
+      ></Card>
+      <Card>
         <DataTable headers={headers} data={data} />
         <div className="filter-container">
           <label htmlFor="estadoFiltro">

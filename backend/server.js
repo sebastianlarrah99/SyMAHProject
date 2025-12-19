@@ -11,7 +11,7 @@ const app = express();
 conectarDB();
 
 // Middlewares
-app.use(cors()); // Permite peticiones desde el frontend (React)
+app.use(cors());
 app.use(express.json({ extended: true })); // Habilitar lectura de JSON
 
 // Puerto de la App
@@ -24,6 +24,7 @@ app.use("/api/trabajos", require("./routes/trabajoRoutes"));
 app.use("/api/transacciones", require("./routes/transaccionRoutes"));
 app.use("/api/registro-horas", require("./routes/registroHorasRoutes"));
 app.use("/api/cargos", require("./routes/cargoRoutes"));
+app.use("/auth", require("./routes/authRoutes").router);
 
 // Arrancar el Servidor
 app.listen(PORT, () => {

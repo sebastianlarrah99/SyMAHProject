@@ -88,30 +88,6 @@ exports.eliminar = async (req, res) => {
   }
 };
 
-// Buscar trabajos por cliente
-exports.buscarPorCliente = async (req, res) => {
-  try {
-    const trabajos = await Trabajo.find({ cliente: req.params.clienteId });
-    res.status(200).json(trabajos);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error al buscar trabajos por cliente", error });
-  }
-};
-
-// Buscar trabajos por empleado
-exports.buscarPorEmpleado = async (req, res) => {
-  try {
-    const trabajos = await Trabajo.find({ empleados: req.params.empleadoId });
-    res.status(200).json(trabajos);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error al buscar trabajos por empleado", error });
-  }
-};
-
 // Actualizar estado de trabajo
 exports.actualizarEstado = async (req, res) => {
   try {
@@ -247,21 +223,6 @@ exports.obtenerTransacciones = async (req, res) => {
       message: "Error al obtener transacciones.",
       error,
     });
-  }
-};
-
-// Obtener estadísticas generales de trabajos
-exports.obtenerEstadisticasGenerales = async (req, res) => {
-  try {
-    const totalTrabajos = await Trabajo.countDocuments();
-    const trabajosPorEstado = await Trabajo.aggregate([
-      { $group: { _id: "$estado", count: { $sum: 1 } } },
-    ]);
-    res.status(200).json({ totalTrabajos, trabajosPorEstado });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error al obtener estadísticas generales", error });
   }
 };
 

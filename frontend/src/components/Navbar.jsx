@@ -20,20 +20,22 @@ const Navbar = () => {
         <FaBars />
       </button>
       <ul className={`navbar-links ${isMenuOpen ? "show" : ""}`}>
-        <li className={location.pathname === "/" ? "active" : ""}>
-          <Link to="/">Inicio</Link>
+        <li className={location.pathname === "/app" ? "active" : ""}>
+          <Link to="/app">Inicio</Link>
         </li>
-        <li className={location.pathname === "/empleados" ? "active" : ""}>
-          <Link to="/empleados">Empleados</Link>
+        <li className={location.pathname === "/app/empleados" ? "active" : ""}>
+          <Link to="/app/empleados">Empleados</Link>
         </li>
-        <li className={location.pathname === "/trabajos" ? "active" : ""}>
-          <Link to="/trabajos">Trabajos</Link>
+        <li className={location.pathname === "/app/trabajos" ? "active" : ""}>
+          <Link to="/app/trabajos">Trabajos</Link>
         </li>
-        <li className={location.pathname === "/clientes" ? "active" : ""}>
-          <Link to="/clientes">Clientes</Link>
+        <li className={location.pathname === "/app/clientes" ? "active" : ""}>
+          <Link to="/app/clientes">Clientes</Link>
         </li>
-        <li className={location.pathname === "/transacciones" ? "active" : ""}>
-          <Link to="/transacciones">Transacciones</Link>
+        <li
+          className={location.pathname === "/app/transacciones" ? "active" : ""}
+        >
+          <Link to="/app/transacciones">Transacciones</Link>
         </li>
       </ul>
     </nav>

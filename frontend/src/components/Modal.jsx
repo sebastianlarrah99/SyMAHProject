@@ -13,7 +13,7 @@ function Modal({ children, onClose, title, description }) {
   };
 
   return (
-    <Card>
+    <>
       <div className="modal-overlay" onClick={handleClose}></div>
       <div className={`modal ${isClosing ? "closing" : ""}`}>
         <button className="modal-close" onClick={handleClose} id="close-button">
@@ -23,7 +23,7 @@ function Modal({ children, onClose, title, description }) {
         {description && <p className="modal-description">{description}</p>}
         {children}
       </div>
-    </Card>
+    </>
   );
 }
 

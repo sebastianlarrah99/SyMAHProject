@@ -24,10 +24,10 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   color: #333;
   z-index: 1000;
-  padding: 24px;
   max-width: none;
   max-height: none;
   isolation: isolate;
+  will-change: transform, opacity;
 }
 
 #close-button {
@@ -109,6 +109,10 @@
 
 .modal {
   animation: modalFadeIn 0.3s ease-out;
+}
+
+body.modal-open {
+  overflow: hidden;
 }
 
 .modal.closing {

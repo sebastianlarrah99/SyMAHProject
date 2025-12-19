@@ -345,33 +345,6 @@ exports.obtenerBalancePorEmpleado = async (req, res) => {
   }
 };
 
-// Obtener estadísticas generales de transacciones
-exports.obtenerEstadisticasGenerales = async (req, res) => {
-  try {
-    const totalTransacciones = await Transaccion.countDocuments();
-    const transaccionesPorTipo = await Transaccion.aggregate([
-      { $group: { _id: "$tipo", count: { $sum: 1 } } },
-    ]);
-    res.status(200).json({ totalTransacciones, transaccionesPorTipo });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error al obtener estadísticas generales", error });
-  }
-};
-
-// Obtener estadísticas por período
-exports.obtenerEstadisticasPorPeriodo = async (req, res) => {
-  try {
-    const { periodo } = req.params;
-    res.status(200).json({ message: "Estadísticas por período", periodo });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error al obtener estadísticas por período", error });
-  }
-};
-
 // Obtener transacciones pendientes de confirmación
 exports.obtenerPendientes = async (req, res) => {
   try {
@@ -413,28 +386,6 @@ exports.cancelar = async (req, res) => {
     res
       .status(500)
       .json({ message: "Error al cancelar la transacción", error });
-  }
-};
-
-// Obtener resumen financiero
-exports.obtenerResumenFinanciero = async (req, res) => {
-  try {
-    const totalCobros = await Transaccion.aggregate([
-      { $match: { tipo: "cobro" } },
-      { $group: { _id: null, total: { $sum: "$monto" } } },
-    ]);
-    const totalPagos = await Transaccion.aggregate([
-      { $match: { tipo: "pago" } },
-      { $group: { _id: null, total: { $sum: "$monto" } } },
-    ]);
-    res.status(200).json({
-      totalCobros: totalCobros[0]?.total || 0,
-      totalPagos: totalPagos[0]?.total || 0,
-    });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error al obtener el resumen financiero", error });
   }
 };
 

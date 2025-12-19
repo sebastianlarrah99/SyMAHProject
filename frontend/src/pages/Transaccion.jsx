@@ -184,7 +184,8 @@ function Transaccion() {
       <Card
         title="Gestión de Transacciones"
         description="Administra las transacciones financieras, incluyendo ingresos y egresos."
-      >
+      ></Card>
+      <Card>
         <DataTable headers={headers} data={data} />
         <div className="filter-container">
           <label htmlFor="yearFiltro">

@@ -144,7 +144,8 @@ function Trabajo() {
       <Card
         title="Gestión de Trabajos"
         description="Administra la información de los trabajos, incluyendo sus detalles y estado."
-      >
+      ></Card>
+      <Card>
         <DataTable headers={headers} data={data} />
         <div className="filter-container">
           <label htmlFor="estadoFiltro">

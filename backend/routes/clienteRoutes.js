@@ -19,9 +19,6 @@ router.put("/:id", clienteController.actualizar);
 // DELETE - Eliminar cliente (Delete - Baja)
 router.delete("/:id", clienteController.eliminar);
 
-// GET - Buscar clientes por criterios específicos
-router.get("/buscar/por-nombre/:nombre", clienteController.buscarPorNombre);
-
 // GET - Obtener trabajos de un cliente específico
 router.get("/:id/trabajos", clienteController.obtenerTrabajos);
 
@@ -30,8 +27,5 @@ router.get(
   "/:id/trabajos-detalles",
   clienteController.obtenerTrabajosConDetalles
 );
-
-// GET - Obtener estadísticas de un cliente
-router.get("/:id/estadisticas", clienteController.obtenerEstadisticas);
 
 module.exports = router;

@@ -19,10 +19,6 @@ router.put("/:id", empleadoController.actualizar);
 // DELETE - Eliminar empleado (Delete - Baja)
 router.delete("/:id", empleadoController.eliminar);
 
-// GET - Buscar empleados por criterios específicos
-router.get("/buscar/por-nombre/:nombre", empleadoController.buscarPorNombre);
-router.get("/buscar/por-cargo/:cargo", empleadoController.buscarPorCargo);
-
 // GET - Obtener trabajos asignados a un empleado
 router.get("/:id/trabajos", empleadoController.obtenerTrabajos);
 
@@ -31,12 +27,6 @@ router.get("/:id/pagos", empleadoController.obtenerPagos);
 
 // PUT - Actualizar estado de empleado (activo/inactivo)
 router.put("/:id/estado", empleadoController.actualizarEstado);
-
-// GET - Obtener empleados activos
-router.get("/estado/activos", empleadoController.obtenerActivos);
-
-// GET - Obtener empleados inactivos
-router.get("/estado/inactivos", empleadoController.obtenerInactivos);
 
 // Obtener empleados (por estado)
 router.get("/", async (req, res) => {

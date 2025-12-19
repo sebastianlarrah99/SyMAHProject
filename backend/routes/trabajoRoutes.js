@@ -19,15 +19,6 @@ router.put("/:id", trabajoController.actualizar);
 // DELETE - Eliminar trabajo (Delete - Baja)
 router.delete("/:id", trabajoController.eliminar);
 
-// GET - Buscar trabajos por criterios específicos
-router.get(
-  "/buscar/por-cliente/:clienteId",
-  trabajoController.buscarPorCliente
-);
-router.get(
-  "/buscar/por-empleado/:empleadoId",
-  trabajoController.buscarPorEmpleado
-);
 router.get("/buscar/por-estado/:estado", trabajoController.buscarPorEstado);
 
 // GET - Obtener trabajos por rango de fechas
@@ -54,11 +45,7 @@ router.get("/:id/empleados", trabajoController.obtenerEmpleados);
 // GET - Obtener transacciones relacionadas con un trabajo
 router.get("/:id/transacciones", trabajoController.obtenerTransacciones);
 
-// Restaurar rutas eliminadas
-router.get(
-  "/estadisticas/generales",
-  trabajoController.obtenerEstadisticasGenerales
-);
+// GET - Obtener trabajos por estado específico
 router.get("/estado/pendientes", trabajoController.obtenerPendientes);
 router.get("/estado/en-progreso", trabajoController.obtenerEnProgreso);
 router.get("/estado/completados", trabajoController.obtenerCompletados);

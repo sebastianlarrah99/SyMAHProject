@@ -125,7 +125,8 @@ function Cliente() {
       <Card
         title="Gestión de Clientes"
         description="Administra la información de los clientes, incluyendo sus datos de contacto."
-      >
+      ></Card>
+      <Card>
         <DataTable headers={headers} data={data} />
       </Card>
       <button

@@ -15,3 +15,22 @@
   opacity: 0;
   transition: opacity 0.3s ease;
 }
+
+.row-slide-out {
+  animation: slideOutAndCollapse 0.3s forwards;
+}
+
+@keyframes slideOutAndCollapse {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+    height: 100%; /* Cambiado de auto a 100% */
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+    height: 0;
+    margin: 0;
+    padding: 0;
+  }
+}

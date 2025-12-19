@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 import "./App.css";
 import Navbar from "./components/Navbar";
@@ -11,7 +11,7 @@ import Card from "./components/Card";
 
 function App() {
   return (
-    <Router>
+    <>
       <Navbar />
       <Routes>
         <Route
@@ -26,17 +26,17 @@ function App() {
             </>
           }
         />
-        <Route path="/empleados" element={<Empleado />} />
-        <Route path="/trabajos" element={<Trabajo />} />
-        <Route path="/clientes" element={<Cliente />} />
-        <Route path="/transacciones" element={<Transaccion />} />
-        <Route path="*" element={<h1>404 Not Found</h1>} />
+        <Route path="empleados" element={<Empleado />} />
+        <Route path="trabajos" element={<Trabajo />} />
+        <Route path="clientes" element={<Cliente />} />
+        <Route path="transacciones" element={<Transaccion />} />
+
         <Route
-          path="/cargos"
+          path="app/cargos"
           element={<h1>Gestión de Cargos - Próximamente</h1>}
         />
       </Routes>
-    </Router>
+    </>
   );
 }
 

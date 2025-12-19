@@ -142,32 +142,6 @@ exports.eliminar = async (req, res) => {
   }
 };
 
-// Buscar empleados por nombre
-exports.buscarPorNombre = async (req, res) => {
-  try {
-    const empleados = await Empleado.find({
-      nombre: new RegExp(req.params.nombre, "i"),
-    });
-    res.status(200).json(empleados);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error al buscar empleados por nombre", error });
-  }
-};
-
-// Buscar empleados por cargo
-exports.buscarPorCargo = async (req, res) => {
-  try {
-    const empleados = await Empleado.find({ cargo: req.params.cargo });
-    res.status(200).json(empleados);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error al buscar empleados por cargo", error });
-  }
-};
-
 // Obtener trabajos asignados a un empleado
 exports.obtenerTrabajos = async (req, res) => {
   try {

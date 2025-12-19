@@ -65,20 +65,6 @@ exports.eliminar = async (req, res) => {
   }
 };
 
-// Buscar clientes por nombre
-exports.buscarPorNombre = async (req, res) => {
-  try {
-    const clientes = await Cliente.find({
-      nombre: new RegExp(req.params.nombre, "i"),
-    });
-    res.status(200).json(clientes);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error al buscar clientes por nombre", error });
-  }
-};
-
 // Obtener trabajos de un cliente específico
 exports.obtenerTrabajos = async (req, res) => {
   try {
@@ -107,21 +93,6 @@ exports.obtenerTransacciones = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Error al obtener las transacciones del cliente",
-      error,
-    });
-  }
-};
-
-// Obtener estadísticas de un cliente
-exports.obtenerEstadisticas = async (req, res) => {
-  try {
-    // Aquí puedes agregar lógica para calcular estadísticas específicas del cliente
-    res
-      .status(200)
-      .json({ message: "Estadísticas del cliente", clienteId: req.params.id });
-  } catch (error) {
-    res.status(500).json({
-      message: "Error al obtener las estadísticas del cliente",
       error,
     });
   }

@@ -10,18 +10,6 @@ router.get("/tipo/cobros", transaccionController.obtenerCobros);
 // GET - Transacciones de pagos
 router.get("/tipo/pagos", transaccionController.obtenerPagos);
 
-// GET - Obtener estadísticas generales
-router.get(
-  "/estadisticas/generales",
-  transaccionController.obtenerEstadisticasGenerales
-);
-
-// GET - Obtener estadísticas por período
-router.get(
-  "/estadisticas/periodo/:periodo",
-  transaccionController.obtenerEstadisticasPorPeriodo
-);
-
 // GET - Obtener transacciones pendientes
 router.get("/pendientes", transaccionController.obtenerPendientes);
 
@@ -30,12 +18,6 @@ router.put("/confirmar/:id", transaccionController.confirmar);
 
 // PUT - Cancelar transacción
 router.put("/cancelar/:id", transaccionController.cancelar);
-
-// GET - Obtener resumen financiero
-router.get(
-  "/resumen-financiero",
-  transaccionController.obtenerResumenFinanciero
-);
 
 // CRUD Operations para Transacciones
 
