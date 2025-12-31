@@ -1,0 +1,166 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  color: #333;
+  background-color: #222;
+  overflow-y: auto;
+  height: auto;
+}
+
+h1 {
+  color: #d1b442;
+  text-decoration: none;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  padding: 1rem;
+  text-align: center;
+}
+
+#flyer {
+  transition: filter 0.3s ease-in-out;
+}
+
+#flyer:hover {
+  animation: neon-effect 10s infinite;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+@keyframes intense-flash {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(2);
+  }
+}
+
+@keyframes gradual-brightness {
+  0% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.5);
+  }
+  100% {
+    filter: brightness(1);
+  }
+}
+
+@keyframes glow-image {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+  }
+  50% {
+    filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.8));
+  }
+}
+
+@keyframes neon-effect {
+  0%,
+  100% {
+    filter: brightness(1) drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+  }
+  50% {
+    filter: brightness(1.5) drop-shadow(0 0 20px rgba(255, 255, 255, 0.8));
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+button {
+  border: none;
+  padding: 2px 5px !important;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s, background-color 0.25s;
+}
+
+button:hover {
+  border-color: #646cff;
+}
+
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+.btn.logout,
+.btn.register {
+  color: white;
+  transition: background-color 0.3s, box-shadow 0.3s !important;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5) !important;
+}
+
+.btn.logout:hover {
+  background-color: rgb(129, 18, 18) !important;
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.8) !important;
+}
+
+.btn.register:hover {
+  background-color: green !important;
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.8) !important;
+}
+
+button.btn.logout {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  border-radius: 100%;
+}
+
+@media (max-width: 768px) {
+  #root {
+    padding: 16px;
+  }
+
+  .card {
+    padding: 16px;
+  }
+
+  .btn.logout,
+  .btn.register {
+    width: 45px;
+    height: 45px;
+    bottom: 15px;
+    right: 15px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  #root {
+    padding: 0.5rem;
+  }
+
+  .card {
+    padding: 0.5rem;
+  }
+
+  .btn.logout,
+  .btn.register {
+    width: 35px;
+    height: 35px;
+    bottom: 5px;
+    right: 5px;
+  }
+}

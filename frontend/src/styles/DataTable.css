@@ -1,0 +1,170 @@
+.data-table {
+  margin-top: 10px;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 auto;
+  background-color: #333;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  color: #fff;
+  border-radius: 5px;
+  overflow: hidden;
+  font-size: 13px;
+}
+
+thead {
+  background-color: #d1b442;
+  color: #fff;
+}
+
+th,
+td {
+  padding: 10px;
+  text-align: center;
+  min-width: 40px;
+}
+
+th {
+  font-weight: bold;
+}
+
+tr:nth-child(even) {
+  background-color: #444;
+}
+
+.table-row {
+  transition: background-color 0.5s, color 0.5s;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  cursor: pointer;
+}
+
+.table-row:hover {
+  background-color: #d1b442;
+  color: #fff;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: center;
+
+  border-style: none;
+  gap: 0px;
+}
+
+.btn {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 5px;
+  transition: transform 0.3s ease in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn:hover {
+  transform: scale(1.1);
+  color: #333;
+}
+
+.btn.view {
+  color: #007bff;
+}
+
+.btn.edit {
+  color: #ffc107;
+}
+
+.btn.hours {
+  color: #28a745;
+}
+
+.btn.delete {
+  color: #dc3545;
+  border: none !important;
+  background: none !important;
+  cursor: pointer;
+  font-size: 18px !important;
+  padding: 5px 10px !important;
+  transition: transform 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+}
+
+.btn.list {
+  color: #ddd;
+}
+
+.btn.toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 50px;
+  height: 25px;
+  border-radius: 25px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  outline: none;
+}
+
+.btn.toggle.active {
+  background-color: #4caf50 !important; /* Verde */
+  color: white;
+}
+
+.btn.toggle.inactive {
+  background-color: #f44336 !important; /* Rojo */
+  color: white;
+}
+
+.switch-circle {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 21px;
+  height: 21px;
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+.data-table .btn.toggle.active .switch-circle {
+  transform: translateX(25px);
+}
+
+.data-table .btn.toggle.inactive .switch-circle {
+  transform: translateX(0);
+}
+
+@media (max-width: 768px) {
+  th,
+  td {
+    display: table-cell;
+    text-align: center;
+    box-sizing: border-box;
+    font-size: 10px;
+  }
+
+  button {
+    font-size: 20px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  th,
+  td {
+    padding: 5px;
+    min-width: 40px;
+    padding: 3px 0px;
+  }
+}

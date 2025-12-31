@@ -1,0 +1,236 @@
+.card {
+  background-color: #333;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 2%;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  position: relative;
+  top: 0px;
+  color: #fff;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin: 20px auto;
+  max-width: 800px;
+  min-width: 700px;
+}
+
+.card-title {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.card-description {
+  font-size: 16px;
+  margin-bottom: 40px;
+}
+
+.card-button {
+  color: #333;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 10px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.card-button:hover {
+  background-color: #d1b442;
+  color: #fff;
+}
+
+.login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  button.btn.login {
+    margin-top: 20px;
+    width: 100%;
+    max-width: 400px;
+    background-color: #d1b442;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 15px !important;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s ease;
+    font-weight: bold;
+  }
+  button.btn.login:hover {
+    background-color: #d1b442;
+    color: #fff;
+    transform: scale(1.01);
+    animation: neon-effect 10s infinite;
+  }
+}
+
+input,
+textarea {
+  display: block;
+  margin: 10px auto;
+  max-width: 400px;
+  min-width: 400px;
+  box-sizing: border-box;
+  padding: 15px;
+  border: 0px solid #ccc;
+  border-radius: 5px;
+  background-color: #444;
+  color: #fff;
+  font-size: 13px;
+  cursor: text;
+}
+
+select {
+  display: block;
+  margin: 10px auto;
+  max-width: 400px;
+  min-width: 400px;
+  box-sizing: border-box;
+  padding: 15px;
+  border: 0px solid #ccc;
+  border-radius: 5px;
+  background-color: #444;
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+label {
+  font-size: 16px;
+  font-weight: bold;
+  text-align: left;
+  color: #fff;
+  margin-top: 10px;
+  display: block;
+}
+
+.filter-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btn.register {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #d1b442;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: 0.3s ease;
+}
+
+.btn.register:hover {
+  background-color: #569945;
+  color: #fff;
+  transform: scale(1.2);
+  animation: neon-effect 10s infinite;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-content: flex-start;
+  margin: 20px;
+}
+
+/* Estilos responsivos para las tarjetas */
+@media (max-width: 768px) {
+  .card {
+    max-width: 600px;
+    min-width: 500px;
+    padding: 15px;
+    font-size: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .card-title {
+    font-size: 20px;
+  }
+
+  .card-description {
+    font-size: 12px;
+  }
+
+  .modal-content {
+    margin: 20px;
+  }
+  input,
+  textarea {
+    display: block;
+    box-sizing: border-box;
+    padding: 15px;
+    border: 0px solid #ccc;
+    border-radius: 5px;
+    background-color: #444;
+    color: #fff;
+    font-size: 13px;
+    cursor: text;
+  }
+
+  select {
+    display: block;
+    margin: 10px auto;
+    max-width: 200px;
+    min-width: 200px;
+    box-sizing: border-box;
+    padding: 15px;
+    border: 0px solid #ccc;
+    border-radius: 5px;
+    background-color: #444;
+    color: #fff;
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  .btn.confirm,
+  .btn.cancel {
+    max-width: 145px;
+    min-width: 145px;
+    max-height: 45px;
+    min-height: 45px;
+  }
+
+  .form-group {
+    margin: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .card {
+    max-width: 450px;
+    padding: 10px;
+  }
+
+  .card-title {
+    font-size: 18px;
+  }
+
+  .card-description {
+    font-size: 10px;
+  }
+
+  .card-button {
+    font-size: 10px;
+    padding: 4px 8px;
+  }
+}
