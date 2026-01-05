@@ -49,7 +49,8 @@
   background-color: brown;
 }
 
-.modal button {
+.btn.confirm,
+.btn.cancel {
   padding: 10px 20px;
   margin: 5px 10px;
   font-size: 18px; /* 1.3rem a px */
@@ -60,11 +61,19 @@
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  width: 200px;
+  width: 145px;
+  height: 45px;
 }
 
-.modal button:hover {
-  background-color: #333333;
+.btn.confirm:hover {
+  background-color: #4caf50;
+  transform: scale(1.03);
+  transition: transform 0.3s ease;
+  color: #fff;
+}
+
+.btn.cancel:hover {
+  background-color: brown;
   transform: scale(1.03);
   transition: transform 0.3s ease;
   color: #fff;

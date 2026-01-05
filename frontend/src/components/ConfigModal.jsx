@@ -12,7 +12,7 @@ function ConfigModal({ onClose, onSuccess = () => {} }) {
   useEffect(() => {
     const fetchCargos = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/api/cargos");
+        const response = await axios.get("http://localhost:4001/api/cargos");
         setCargos(response.data);
       } catch (error) {
         console.error("Error al obtener los cargos:", error);
@@ -45,13 +45,13 @@ function ConfigModal({ onClose, onSuccess = () => {} }) {
 
     try {
       if (modo === "crear") {
-        await axios.post("http://localhost:4000/api/cargos", {
+        await axios.post("http://localhost:4001/api/cargos", {
           nombre,
           pagoPorHora,
         });
       } else if (modo === "modificar" && cargoSeleccionado) {
         await axios.put(
-          `http://localhost:4000/api/cargos/${cargoSeleccionado}`,
+          `http://localhost:4001/api/cargos/${cargoSeleccionado}`,
           {
             nombre,
             pagoPorHora,
@@ -72,27 +72,30 @@ function ConfigModal({ onClose, onSuccess = () => {} }) {
         <h3>Configuración de Cargos</h3>
         <form onSubmit={handleSubmit}>
           <div className="modal-content">
-            <label>
-              Modo
-              <select value={modo} onChange={handleModoChange}>
-                <option value="crear">Crear Nuevo Cargo</option>
-                <option value="modificar">Modificar Cargo Existente</option>
-              </select>
-            </label>{" "}
-            {modo === "modificar" && (
-              <label>
-                Seleccionar Cargo
-                <select value={cargoSeleccionado} onChange={handleCargoChange}>
-                  <option value="">-- Seleccionar --</option>
-                  {cargos.map((cargo) => (
-                    <option key={cargo._id} value={cargo._id}>
-                      {cargo.nombre}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            )}
             <div className="form-group">
+              <label>
+                Modo
+                <select value={modo} onChange={handleModoChange}>
+                  <option value="crear">Crear Nuevo Cargo</option>
+                  <option value="modificar">Modificar Cargo Existente</option>
+                </select>
+              </label>{" "}
+              {modo === "modificar" && (
+                <label>
+                  Seleccionar Cargo
+                  <select
+                    value={cargoSeleccionado}
+                    onChange={handleCargoChange}
+                  >
+                    <option value="">-- Seleccionar --</option>
+                    {cargos.map((cargo) => (
+                      <option key={cargo._id} value={cargo._id}>
+                        {cargo.nombre}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              )}
               <label>
                 Nombre
                 <input

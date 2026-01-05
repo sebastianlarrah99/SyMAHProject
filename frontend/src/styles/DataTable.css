@@ -86,7 +86,7 @@ tr:nth-child(even) {
 }
 
 .btn.delete {
-  color: #dc3545;
+  color: brown;
   border: none !important;
   background: none !important;
   cursor: pointer;
@@ -123,7 +123,7 @@ tr:nth-child(even) {
 }
 
 .btn.toggle.inactive {
-  background-color: #f44336 !important; /* Rojo */
+  background-color: brown !important; /* Rojo */
   color: white;
 }
 

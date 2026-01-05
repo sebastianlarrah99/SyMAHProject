@@ -147,7 +147,7 @@ label {
 
 .form-group {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: center;
   align-content: flex-start;
   margin: 20px;

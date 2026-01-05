@@ -39,6 +39,21 @@ const sslOptions = {
   cert: fs.readFileSync("./certs/cert.pem"),
 };
 
+// Log para verificar el inicio del servidor HTTPS
+console.log("Intentando iniciar el servidor HTTPS en el puerto", PORT);
+
+// Middleware para registrar todas las solicitudes entrantes
+app.use((req, res, next) => {
+  console.log(`Solicitud entrante: ${req.method} ${req.url}`);
+  next();
+});
+
+// Log para capturar errores globales
+app.use((err, req, res, next) => {
+  console.error("Error global capturado:", err);
+  res.status(500).json({ message: "Error interno del servidor" });
+});
+
 // Arrancar el Servidor HTTPS
 https.createServer(sslOptions, app).listen(PORT, () => {
   console.log(
@@ -52,3 +67,13 @@ app.listen(4001, () => {
 });
 
 module.exports = app;
+require("dotenv").config();
+conectarDB();
+
+app.use("/api/empleados", require("./routes/empleadoRoutes"));
+app.use("/api/clientes", require("./routes/clienteRoutes"));
+app.use("/api/trabajos", require("./routes/trabajoRoutes"));
+app.use("/api/transacciones", require("./routes/transaccionRoutes"));
+app.use("/api/registro-horas", require("./routes/registroHorasRoutes"));
+app.use("/api/cargos", require("./routes/cargoRoutes"));
+app.use("/auth", require("./routes/authRoutes").router);
