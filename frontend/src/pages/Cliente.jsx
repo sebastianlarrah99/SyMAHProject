@@ -23,7 +23,7 @@ function Cliente() {
   useEffect(() => {
     const fetchClientes = async () => {
       try {
-        const response = await axios.get("http://localhost:4001/api/clientes");
+        const response = await axios.get("http://localhost:4000/api/clientes");
         setClientes(response.data);
       } catch (error) {
         console.error("Error al obtener los clientes:", error);
@@ -37,7 +37,7 @@ function Cliente() {
     if (clienteAEliminar) {
       try {
         await axios.delete(
-          `http://localhost:4001/api/clientes/${clienteAEliminar}`
+          `http://localhost:4000/api/clientes/${clienteAEliminar}`
         );
         setClientes(
           clientes.filter((cliente) => cliente._id !== clienteAEliminar)
@@ -106,6 +106,14 @@ function Cliente() {
           <FaEdit />
         </button>
       )}
+
+      <button
+        className="btn list"
+        title="Ver Trabajos"
+        onClick={() => openTrabajosModal(cliente._id)}
+      >
+        <FaList />
+      </button>
       {role === "admin" && (
         <button
           className="btn delete"
@@ -115,13 +123,6 @@ function Cliente() {
           <FaTrash />
         </button>
       )}
-      <button
-        className="btn list"
-        title="Ver Trabajos"
-        onClick={() => openTrabajosModal(cliente._id)}
-      >
-        <FaList />
-      </button>
     </div>,
   ]);
 

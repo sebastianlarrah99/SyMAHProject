@@ -128,11 +128,11 @@ function RegistroEmpleadoModal({ onClose, onSuccess }) {
             </label>
           </div>
           <div className="modal-actions">
-            <button type="button" className="btn cancel" onClick={onClose}>
-              Cancelar
-            </button>
             <button type="submit" className="btn confirm">
               Registrar
+            </button>
+            <button type="button" className="btn cancel" onClick={onClose}>
+              Cancelar
             </button>
           </div>
         </form>

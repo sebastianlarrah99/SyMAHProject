@@ -23,7 +23,21 @@ function TransaccionesTrabajoModal({ trabajoId, onClose }) {
         }
       } catch (error) {
         console.error("Error al obtener las transacciones del trabajo:", error);
-        setMensaje("Error al cargar las transacciones.");
+        if (error.response) {
+          // El servidor respondió con un código de estado fuera del rango 2xx
+          console.error("Error del servidor:", error.response.data);
+          setMensaje(
+            error.response.data.message || "Error al cargar las transacciones."
+          );
+        } else if (error.request) {
+          // La solicitud fue hecha pero no se recibió respuesta
+          console.error("Sin respuesta del servidor:", error.request);
+          setMensaje("No se pudo conectar con el servidor.");
+        } else {
+          // Algo pasó al configurar la solicitud
+          console.error("Error al configurar la solicitud:", error.message);
+          setMensaje("Error inesperado al cargar las transacciones.");
+        }
       } finally {
         setLoading(false);
       }
@@ -59,7 +73,7 @@ function TransaccionesTrabajoModal({ trabajoId, onClose }) {
           <DataTable headers={headers} data={data} />
         )}
         <div className="modal-actions">
-          <button className="btn close" onClick={onClose}>
+          <button className="btn cancel" onClick={onClose}>
             Cerrar
           </button>
         </div>

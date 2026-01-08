@@ -63,7 +63,7 @@ function TrabajosClienteModal({ clienteId, onClose }) {
           <DataTable headers={headers} data={data} />
         )}
         <div className="modal-actions">
-          <button className="btn close" onClick={onClose}>
+          <button className="btn cancel" onClick={onClose}>
             Cerrar
           </button>
         </div>

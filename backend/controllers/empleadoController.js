@@ -1,6 +1,7 @@
 const Empleado = require("../models/Empleado");
 const Cargo = require("../models/Cargo"); // Importar el modelo Cargo
-const Transaccion = require("../models/Transaccion"); // Importar el modelo Transaccion
+const { Transaccion } = require("../models/Transaccion"); // Importar el modelo Transaccion
+const mongoose = require("mongoose"); // Importar mongoose para validar ObjectId
 
 // Obtener todos los empleados
 exports.obtenerTodos = async (req, res) => {
@@ -15,16 +16,29 @@ exports.obtenerTodos = async (req, res) => {
 // Obtener empleado por ID
 exports.obtenerPorId = async (req, res) => {
   try {
-    console.log("ID recibido para obtener empleado:", req.params.id); // Log del ID recibido
+    const empleadoId = req.params.id;
 
-    const empleado = await Empleado.findById(req.params.id).populate("cargo");
+    // Validar que el ID recibido sea un ID válido de MongoDB
+    if (!mongoose.Types.ObjectId.isValid(empleadoId)) {
+      console.error("ID inválido recibido:", empleadoId);
+      return res.status(400).json({ message: "ID inválido" });
+    }
+
+    console.log("ID recibido para obtener empleado:", empleadoId); // Log del ID recibido
+
+    const empleado = await Empleado.findById(empleadoId).populate("cargo");
     console.log("Resultado de la consulta de empleado:", empleado); // Log del resultado de la consulta
 
     if (!empleado) {
+      console.error("Empleado no encontrado para el ID:", empleadoId);
       return res.status(404).json({ message: "Empleado no encontrado" });
     }
 
     if (!empleado.cargo) {
+      console.error(
+        "El empleado no tiene un cargo asignado o el cargo no existe:",
+        empleado
+      );
       return res.status(400).json({
         message: "El empleado no tiene un cargo asignado o el cargo no existe.",
       });
@@ -40,6 +54,8 @@ exports.obtenerPorId = async (req, res) => {
     finMes.setDate(0);
     finMes.setHours(23, 59, 59, 999);
 
+    console.log("Rango de fechas para transacciones:", inicioMes, finMes);
+
     const transaccionesMes = await Transaccion.find({
       actor: empleado._id,
       actorTipo: "Empleado",
@@ -47,10 +63,30 @@ exports.obtenerPorId = async (req, res) => {
       fecha: { $gte: inicioMes, $lte: finMes },
     });
 
+    console.log(
+      "Transacciones encontradas para el empleado:",
+      transaccionesMes
+    );
+
+    console.log("Datos utilizados para la consulta de transacciones:", {
+      actor: empleado._id,
+      actorTipo: "Empleado",
+      tipo: "pago",
+      fecha: { $gte: inicioMes, $lte: finMes },
+    });
+
+    if (transaccionesMes.length === 0) {
+      console.warn(
+        "No se encontraron transacciones para el empleado en el mes actual."
+      );
+    }
+
     const pagadoMes = transaccionesMes.reduce(
       (total, transaccion) => total + transaccion.monto,
       0
     );
+
+    console.log("Monto total pagado en el mes:", pagadoMes);
 
     res.status(200).json({
       ...empleado.toObject(),
@@ -58,7 +94,13 @@ exports.obtenerPorId = async (req, res) => {
     });
   } catch (error) {
     console.error("Error al obtener el empleado:", error); // Log del error
-    res.status(500).json({ message: "Error al obtener el empleado", error });
+
+    // Respuesta más detallada para el cliente
+    res.status(500).json({
+      message:
+        "Error interno al obtener el empleado. Por favor, revisa los logs.",
+      error: error.message,
+    });
   }
 };
 

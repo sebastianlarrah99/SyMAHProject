@@ -50,7 +50,8 @@
 }
 
 .btn.confirm,
-.btn.cancel {
+.btn.cancel,
+.btn.consult {
   padding: 10px 20px;
   margin: 5px 10px;
   font-size: 18px; /* 1.3rem a px */
@@ -74,6 +75,13 @@
 
 .btn.cancel:hover {
   background-color: brown;
+  transform: scale(1.03);
+  transition: transform 0.3s ease;
+  color: #fff;
+}
+
+.btn.consult:hover {
+  background-color: #007bff;
   transform: scale(1.03);
   transition: transform 0.3s ease;
   color: #fff;

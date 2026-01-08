@@ -13,7 +13,7 @@ function RegistroTransaccionModal({ onClose, onSuccess, transaccion }) {
   const [actores, setActores] = useState({ empleados: [], trabajos: [] });
 
   useEffect(() => {
-    const fetchActores = async () => {
+    const fetchActoresYGastos = async () => {
       try {
         const empleadosResponse = await axios.get(
           "http://localhost:4000/api/empleados"
@@ -29,7 +29,7 @@ function RegistroTransaccionModal({ onClose, onSuccess, transaccion }) {
         console.error("Error al obtener actores:", error);
       }
     };
-    fetchActores();
+    fetchActoresYGastos();
   }, []);
 
   // Ajustar para filtrar actores según el tipo seleccionado
@@ -49,7 +49,12 @@ function RegistroTransaccionModal({ onClose, onSuccess, transaccion }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const tipo = formData.actorTipo === "Empleado" ? "pago" : "cobro";
+      const tipo =
+        formData.actorTipo === "Empleado"
+          ? "pago"
+          : formData.actorTipo === "Trabajo"
+          ? "cobro"
+          : "gasto";
       const dataToSend = {
         monto: formData.monto,
         fecha: formData.fecha,
@@ -116,6 +121,7 @@ function RegistroTransaccionModal({ onClose, onSuccess, transaccion }) {
                 <option value="">Seleccione un tipo</option>
                 <option value="Empleado">Empleado</option>
                 <option value="Trabajo">Trabajo</option>
+                <option value="Gasto">Gasto</option>
               </select>
             </label>
           </div>
@@ -142,6 +148,20 @@ function RegistroTransaccionModal({ onClose, onSuccess, transaccion }) {
                       {trabajo.titulo}
                     </option>
                   ))}
+                {formData.actorTipo === "Gasto" &&
+                  [
+                    "Material",
+                    "Arreglo",
+                    "Impuesto",
+                    "Seguro",
+                    "Herramienta",
+                    "Combustible",
+                    "Otro",
+                  ].map((tipoGasto) => (
+                    <option key={tipoGasto} value={tipoGasto}>
+                      {tipoGasto}
+                    </option>
+                  ))}
               </select>
             </label>
           </div>
@@ -157,11 +177,11 @@ function RegistroTransaccionModal({ onClose, onSuccess, transaccion }) {
             </label>
           </div>
           <div className="modal-actions">
-            <button type="button" className="btn cancel" onClick={onClose}>
-              Cancelar
-            </button>
             <button type="submit" className="btn confirm">
               Registrar
+            </button>
+            <button type="button" className="btn cancel" onClick={onClose}>
+              Cancelar
             </button>
           </div>
         </form>

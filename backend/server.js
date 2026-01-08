@@ -2,14 +2,7 @@
 const express = require("express");
 const cors = require("cors");
 const conectarDB = require("./config/db");
-const https = require("https");
-const fs = require("fs");
 require("dotenv").config();
-
-// Deshabilitar la verificación de certificados en desarrollo
-if (process.env.NODE_ENV === "development") {
-  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-}
 
 // Inicializar la App
 const app = express();
@@ -32,15 +25,7 @@ app.use("/api/transacciones", require("./routes/transaccionRoutes"));
 app.use("/api/registro-horas", require("./routes/registroHorasRoutes"));
 app.use("/api/cargos", require("./routes/cargoRoutes"));
 app.use("/auth", require("./routes/authRoutes").router);
-
-// Cargar certificados SSL
-const sslOptions = {
-  key: fs.readFileSync("./certs/key.pem"),
-  cert: fs.readFileSync("./certs/cert.pem"),
-};
-
-// Log para verificar el inicio del servidor HTTPS
-console.log("Intentando iniciar el servidor HTTPS en el puerto", PORT);
+app.use("/api/gastos", require("./routes/gastoRoutes"));
 
 // Middleware para registrar todas las solicitudes entrantes
 app.use((req, res, next) => {
@@ -54,26 +39,9 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: "Error interno del servidor" });
 });
 
-// Arrancar el Servidor HTTPS
-https.createServer(sslOptions, app).listen(PORT, () => {
-  console.log(
-    `El servidor HTTPS está funcionando en https://localhost:${PORT}`
-  );
-});
-
 // Arrancar el Servidor HTTP
-app.listen(4001, () => {
-  console.log("El servidor HTTP está funcionando en http://localhost:4001");
+app.listen(PORT, () => {
+  console.log(`El servidor HTTP está funcionando en http://localhost:${PORT}`);
 });
 
 module.exports = app;
-require("dotenv").config();
-conectarDB();
-
-app.use("/api/empleados", require("./routes/empleadoRoutes"));
-app.use("/api/clientes", require("./routes/clienteRoutes"));
-app.use("/api/trabajos", require("./routes/trabajoRoutes"));
-app.use("/api/transacciones", require("./routes/transaccionRoutes"));
-app.use("/api/registro-horas", require("./routes/registroHorasRoutes"));
-app.use("/api/cargos", require("./routes/cargoRoutes"));
-app.use("/auth", require("./routes/authRoutes").router);

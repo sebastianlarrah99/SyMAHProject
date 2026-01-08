@@ -3,7 +3,8 @@ const TrabajosXCliente = require("../models/TrabajosXCliente");
 const EmpleadosXTrabajo = require("../models/EmpleadosXTrabajo");
 const RegistroHoras = require("../models/RegistroHoras");
 const Empleado = require("../models/Empleado");
-const Transaccion = require("../models/Transaccion"); // Asegúrate de tener el modelo Transaccion
+const { Transaccion } = require("../models/Transaccion"); // Ajustar la importación para obtener el modelo Transaccion
+const mongoose = require("mongoose"); // Importar mongoose para validar ObjectId
 
 // Obtener todos los trabajos
 exports.obtenerTodos = async (req, res) => {
@@ -205,17 +206,27 @@ exports.obtenerEmpleados = async (req, res) => {
 exports.obtenerTransacciones = async (req, res) => {
   try {
     const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      console.error("ID inválido recibido:", id);
+      return res.status(400).json({ message: "ID inválido" });
+    }
+
+    console.log("ID recibido para obtener transacciones:", id);
+
     const transacciones = await Transaccion.find({
       actor: id, // Asegurarse de que el ID del actor sea el correcto
       actorTipo: { $in: ["Trabajo", "Empleado"] }, // Permitir tanto trabajos como empleados
     });
 
     if (!transacciones || transacciones.length === 0) {
+      console.warn("No se encontraron transacciones asociadas para el ID:", id);
       return res.status(200).json({
         message: "No se encontraron transacciones asociadas.",
       });
     }
 
+    console.log("Transacciones encontradas:", transacciones);
     res.status(200).json(transacciones);
   } catch (error) {
     console.error("Error al obtener transacciones:", error);

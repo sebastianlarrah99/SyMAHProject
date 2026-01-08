@@ -24,8 +24,8 @@ function Trabajo() {
   const fetchTrabajos = async () => {
     try {
       const url = estadoFiltro
-        ? `http://localhost:4001/api/trabajos?estado=${estadoFiltro}`
-        : `http://localhost:4001/api/trabajos`;
+        ? `http://localhost:4000/api/trabajos?estado=${estadoFiltro}`
+        : `http://localhost:4000/api/trabajos`;
       const response = await axios.get(url);
       setTrabajos(response.data || []);
     } catch (error) {
@@ -42,7 +42,7 @@ function Trabajo() {
     if (trabajoAEliminar) {
       try {
         await axios.delete(
-          `http://localhost:4001/api/trabajos/${trabajoAEliminar}`
+          `http://localhost:4000/api/trabajos/${trabajoAEliminar}`
         );
         setTrabajos(
           trabajos.filter((trabajo) => trabajo._id !== trabajoAEliminar)
@@ -128,6 +128,14 @@ function Trabajo() {
             <FaEdit />
           </button>
         )}
+
+        <button
+          className="btn list"
+          title="Ver Transacciones"
+          onClick={() => openTransaccionesModal(trabajo._id)}
+        >
+          <FaList />
+        </button>
         {role === "admin" && (
           <button
             className="btn delete"
@@ -137,13 +145,6 @@ function Trabajo() {
             <FaTrash />
           </button>
         )}
-        <button
-          className="btn list"
-          title="Ver Transacciones"
-          onClick={() => openTransaccionesModal(trabajo._id)}
-        >
-          <FaList />
-        </button>
       </div>,
     ]);
 

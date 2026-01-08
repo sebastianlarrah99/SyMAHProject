@@ -1,4 +1,4 @@
-const Transaccion = require("../models/Transaccion");
+const { Transaccion } = require("../models/Transaccion");
 const Cliente = require("../models/Cliente");
 const Trabajo = require("../models/Trabajo");
 const Empleado = require("../models/Empleado");
@@ -25,12 +25,45 @@ exports.obtenerTodas = async (req, res) => {
       filtro.fecha = { $gte: inicioMes, $lt: finMes };
     }
 
-    const transacciones = await Transaccion.find(filtro);
-    res.status(200).json(transacciones);
+    const transacciones = await Transaccion.find(filtro).catch((error) => {
+      console.error("Error al consultar transacciones:", error);
+      throw new Error("Error al consultar transacciones");
+    });
+    console.log("Filtro aplicado para obtener transacciones:", filtro);
+    console.log("Transacciones obtenidas:", transacciones);
+
+    // Incluir nombres de actores en las transacciones
+    const transaccionesConActores = await Promise.all(
+      transacciones.map(async (transaccion) => {
+        if (transaccion.actorTipo === "Empleado") {
+          const empleado = await Empleado.findById(transaccion.actor);
+          return {
+            ...transaccion._doc,
+            actorNombre: empleado ? empleado.nombre : "Empleado no encontrado",
+          };
+        } else if (transaccion.actorTipo === "Trabajo") {
+          const trabajo = await Trabajo.findById(transaccion.actor);
+          return {
+            ...transaccion._doc,
+            actorNombre: trabajo ? trabajo.titulo : "Trabajo no encontrado",
+          };
+        } else if (transaccion.actorTipo === "Gasto") {
+          return {
+            ...transaccion._doc,
+            actorNombre: transaccion.actor, // Usar directamente el tipo de gasto
+          };
+        }
+        return transaccion;
+      })
+    );
+
+    res.status(200).json(transaccionesConActores);
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error al obtener las transacciones", error });
+    console.error("Detalles del error al obtener transacciones:", error);
+    res.status(500).json({
+      message: "Error al obtener las transacciones",
+      error: error.message || "Error desconocido",
+    });
   }
 };
 
@@ -85,12 +118,34 @@ exports.crear = async (req, res) => {
           message: "El ID del actor no corresponde a un trabajo válido.",
         });
       }
+      console.log("Validando trabajo para cobro. ID del trabajo:", actor);
+      console.log("Monto del cobro:", montoNumerico);
+      console.log("Estado actual del trabajo:", trabajo);
       trabajo.acumuladoPagos = (trabajo.acumuladoPagos || 0) + montoNumerico;
       await trabajo.save();
 
       // Actualizar las ganancias del trabajo
       trabajo.ganancias = trabajo.acumuladoPagos - trabajo.gastoManoObra;
       await trabajo.save();
+    } else if (normalizedTipo === "gasto" && actorTipo === "Gasto") {
+      // Validar que el actor sea uno de los tipos de gastos permitidos
+      const tiposDeGasto = [
+        "Material",
+        "Arreglo",
+        "Impuesto",
+        "Seguro",
+        "Herramienta",
+        "Combustible",
+        "Otro",
+      ];
+
+      if (!tiposDeGasto.includes(actor)) {
+        return res.status(400).json({
+          message: "El tipo de gasto proporcionado no es válido.",
+        });
+      }
+
+      console.log("Registrando gasto con tipo de actor:", actor);
     } else {
       console.error("Tipo de transacción o actor inválido:", {
         tipo: normalizedTipo,
@@ -135,16 +190,38 @@ exports.eliminar = async (req, res) => {
       const empleado = await Empleado.findById(actor);
       if (empleado) {
         console.log("Empleado antes de eliminar transacción:", empleado);
-        empleado.saldo += monto; // Ajustar el saldo
-        empleado.pagado -= monto; // Ajustar el pagado
+        empleado.saldo = Math.max(0, empleado.saldo + monto); // Evitar saldo negativo
+        empleado.pagado = Math.max(0, empleado.pagado - monto); // Ajustar el total pagado
         await empleado.save();
         console.log("Empleado después de eliminar transacción:", empleado);
       }
     } else if (actorTipo === "Trabajo" && tipo === "cobro") {
       const trabajo = await Trabajo.findById(actor);
       if (trabajo) {
-        trabajo.acumuladoPagos -= monto; // Ajustar el acumulado de pagos
+        console.log(
+          "Trabajo encontrado para actualizar ganancias y cobrado:",
+          trabajo
+        );
+        console.log(
+          "Valores antes de la actualización: Cobrado:",
+          trabajo.cobrado,
+          ", Ganancias:",
+          trabajo.ganancias
+        );
+
+        trabajo.cobrado = Math.max(0, trabajo.cobrado - monto); // Restar el monto de cobrado
+        trabajo.ganancias = Math.max(0, trabajo.ganancias - monto); // Restar el monto de ganancias
+
         await trabajo.save();
+
+        console.log(
+          "Valores después de la actualización: Cobrado:",
+          trabajo.cobrado,
+          ", Ganancias:",
+          trabajo.ganancias
+        );
+      } else {
+        console.error("No se encontró el trabajo con ID:", actor);
       }
     }
 
@@ -160,7 +237,12 @@ exports.eliminar = async (req, res) => {
       };
     }
 
-    const transaccionesActualizadas = await Transaccion.find(filtro);
+    const transaccionesActualizadas = await Transaccion.find(filtro).catch(
+      (error) => {
+        console.error("Error al consultar transacciones:", error);
+        throw new Error("Error al consultar transacciones");
+      }
+    );
 
     res.status(200).json({
       message: "Transacción eliminada correctamente",
@@ -217,10 +299,38 @@ exports.buscarPorEmpleado = async (req, res) => {
     console.log("Parámetros recibidos:", { mes, anio });
     console.log("Filtro generado:", filtro);
 
-    const transacciones = await Transaccion.find(filtro);
+    const transacciones = await Transaccion.find(filtro).catch((error) => {
+      console.error("Error al consultar transacciones:", error);
+      throw new Error("Error al consultar transacciones");
+    });
     console.log("Transacciones encontradas:", transacciones);
 
-    res.status(200).json(transacciones);
+    // Incluir nombres de actores en las transacciones
+    const transaccionesConActores = await Promise.all(
+      transacciones.map(async (transaccion) => {
+        if (transaccion.actorTipo === "Empleado") {
+          const empleado = await Empleado.findById(transaccion.actor);
+          return {
+            ...transaccion._doc,
+            actorNombre: empleado ? empleado.nombre : "Empleado no encontrado",
+          };
+        } else if (transaccion.actorTipo === "Trabajo") {
+          const trabajo = await Trabajo.findById(transaccion.actor);
+          return {
+            ...transaccion._doc,
+            actorNombre: trabajo ? trabajo.titulo : "Trabajo no encontrado",
+          };
+        } else if (transaccion.actorTipo === "Gasto") {
+          return {
+            ...transaccion._doc,
+            actorNombre: transaccion.actor, // Usar directamente el tipo de gasto
+          };
+        }
+        return transaccion;
+      })
+    );
+
+    res.status(200).json(transaccionesConActores);
   } catch (error) {
     console.error("Error al buscar transacciones por empleado:", error);
     res

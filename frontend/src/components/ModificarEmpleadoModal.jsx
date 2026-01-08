@@ -139,11 +139,11 @@ function ModificarEmpleadoModal({ empleado, onClose, onSuccess }) {
             </label>
           </div>
           <div className="modal-actions">
-            <button type="button" className="btn cancel" onClick={onClose}>
-              Cancelar
-            </button>
             <button type="submit" className="btn confirm">
               Guardar Cambios
+            </button>
+            <button type="button" className="btn cancel" onClick={onClose}>
+              Cancelar
             </button>
           </div>
         </form>

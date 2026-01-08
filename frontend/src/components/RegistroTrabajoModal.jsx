@@ -145,11 +145,11 @@ function RegistroTrabajoModal({ onClose, onSuccess, trabajoAModificar }) {
             </label>
           </div>
           <div className="modal-actions">
-            <button type="button" className="btn cancel" onClick={onClose}>
-              Cancelar
-            </button>
             <button type="submit" className="btn confirm">
               {trabajoAModificar ? "Guardar Cambios" : "Registrar"}
+            </button>
+            <button type="button" className="btn cancel" onClick={onClose}>
+              Cancelar
             </button>
           </div>
         </form>

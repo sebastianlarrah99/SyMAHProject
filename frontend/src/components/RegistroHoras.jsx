@@ -44,13 +44,19 @@ function RegisterHoursModal({ empleadoId, onClose, onSuccess }) {
           setTarifa(0); // Asignar una tarifa predeterminada o 0
         }
       } catch (error) {
-        if (error.response && error.response.status === 400) {
-          console.error(
-            "El empleado no tiene un cargo asignado o el cargo no existe."
+        console.error("Error al obtener la tarifa del empleado:", error);
+
+        // Mostrar un mensaje más claro al usuario
+        if (error.response && error.response.status === 500) {
+          alert(
+            "Hubo un error en el servidor al intentar obtener la tarifa del empleado. Por favor, inténtalo más tarde."
           );
         } else {
-          console.error("Error al obtener la tarifa del empleado:", error);
+          alert(
+            "No se pudo obtener la tarifa del empleado. Verifica tu conexión o contacta al administrador."
+          );
         }
+
         setTarifa(0); // Asignar una tarifa predeterminada o 0 en caso de error
       }
     };
@@ -60,50 +66,54 @@ function RegisterHoursModal({ empleadoId, onClose, onSuccess }) {
   }, [empleadoId]);
 
   useEffect(() => {
-    const { horaInicio, horaFin, fecha } = formData;
-    console.log("Valores actuales para el cálculo:", {
-      horaInicio,
-      horaFin,
-      fecha,
-      tarifa,
-    });
+    const { horaInicio, horaFin, fecha, trabajoNombre } = formData;
 
-    if (!fecha) {
-      console.warn("La fecha no está definida o es inválida.");
+    console.log("Valores actuales de formData:", formData);
+    console.log("Tarifa actual:", tarifa);
+
+    // Validar que todos los campos necesarios estén completos
+    if (!fecha || !horaInicio || !horaFin || !trabajoNombre) {
+      console.warn("Faltan datos para calcular el monto.");
       setMontoCalculado(0);
       return;
     }
 
-    if (!horaInicio || !horaFin) {
-      console.warn("Hora de inicio o fin no están definidas.");
-      setMontoCalculado(0);
-      return;
-    }
-
+    // Crear objetos de fecha para calcular la diferencia de horas
     const inicio = new Date(`${fecha}T${horaInicio}`);
     const fin = new Date(`${fecha}T${horaFin}`);
 
+    // Validar que las fechas sean válidas
     if (isNaN(inicio.getTime()) || isNaN(fin.getTime())) {
-      console.warn("Los valores de horaInicio o horaFin no son válidos.");
+      console.warn("Fechas inválidas para el cálculo.");
       setMontoCalculado(0);
       return;
     }
 
+    // Calcular las horas trabajadas
     const horasTrabajadas = (fin - inicio) / (1000 * 60 * 60);
     console.log("Horas trabajadas calculadas:", horasTrabajadas);
 
+    // Actualizar el monto calculado si las horas trabajadas son válidas
     if (horasTrabajadas > 0) {
-      setMontoCalculado(horasTrabajadas * tarifa); // Usar la tarifa obtenida
-      console.log("Monto calculado:", horasTrabajadas * tarifa);
+      const nuevoMonto = horasTrabajadas * tarifa;
+      console.log("Monto calculado:", nuevoMonto);
+      setMontoCalculado(nuevoMonto);
     } else {
-      setMontoCalculado(0);
       console.warn("Horas trabajadas no válidas o negativas.");
+      setMontoCalculado(0);
     }
-  }, [formData, tarifa]);
+  }, [
+    formData.horaInicio,
+    formData.horaFin,
+    formData.fecha,
+    formData.trabajoNombre,
+    tarifa,
+  ]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    console.log(`Campo actualizado: ${name}, Valor: ${value}`);
+    setFormData((prevFormData) => ({ ...prevFormData, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -176,7 +186,7 @@ function RegisterHoursModal({ empleadoId, onClose, onSuccess }) {
                 onChange={handleInputChange}
                 required
               />
-            </label>{" "}
+            </label>
           </div>
           <div className="form-group">
             <label>
@@ -210,10 +220,18 @@ function RegisterHoursModal({ empleadoId, onClose, onSuccess }) {
           </div>
           <p>Tarifa por Hora: ${tarifa.toFixed(2)}</p>
           <p>Monto Calculado: ${montoCalculado.toFixed(2)}</p>
-          <button type="submit">Registrar</button>
-          <button type="button" onClick={openHoursModal}>
-            Consultar Horarios
-          </button>
+          <div className="modal-actions">
+            <button className="btn confirm" type="submit">
+              Registrar
+            </button>
+            <button
+              className="btn consult"
+              type="button"
+              onClick={openHoursModal}
+            >
+              Consultar Horarios
+            </button>
+          </div>
         </form>
       </div>
       {isHoursModalOpen && (

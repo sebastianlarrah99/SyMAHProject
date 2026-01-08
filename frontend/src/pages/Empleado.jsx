@@ -40,11 +40,16 @@ const Empleado = () => {
   const [empleadoTransacciones, setEmpleadoTransacciones] = useState(null);
   const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
 
+  const formatter = new Intl.NumberFormat("es-MX", {
+    style: "currency",
+    currency: "MXN",
+  });
+
   const fetchEmpleados = useCallback(async () => {
     try {
       const url = estadoFiltro
-        ? `http://localhost:4001/api/empleados?estado=${estadoFiltro}`
-        : `http://localhost:4001/api/empleados`;
+        ? `http://localhost:4000/api/empleados?estado=${estadoFiltro}`
+        : `http://localhost:4000/api/empleados`;
       console.log("URL generada para la solicitud:", url); // Depuración
       const response = await axios.get(url);
       console.log("Datos recibidos del backend:", response.data); // Depuración
@@ -67,7 +72,7 @@ const Empleado = () => {
     if (empleadoAEliminar) {
       try {
         await axios.delete(
-          `http://localhost:4001/api/empleados/${empleadoAEliminar}`
+          `http://localhost:4000/api/empleados/${empleadoAEliminar}`
         );
         setEmpleados((empleados) =>
           empleados.filter((empleado) => empleado._id !== empleadoAEliminar)
@@ -82,7 +87,7 @@ const Empleado = () => {
   const toggleEstadoEmpleado = async (id, estadoActual) => {
     try {
       const nuevoEstado = estadoActual === "activo" ? "inactivo" : "activo";
-      await axios.put(`http://localhost:4001/api/empleados/inactivar/${id}`, {
+      await axios.put(`http://localhost:4000/api/empleados/inactivar/${id}`, {
         estado: nuevoEstado,
       });
       fetchEmpleados();
@@ -160,11 +165,12 @@ const Empleado = () => {
     setEstadoFiltro(e.target.value);
   };
 
-  const headers = ["Nombre", "Cargo", "Estado", "Acciones"];
+  const headers = ["Nombre", "Cargo", "Saldo", "Acciones"];
   const data = empleados.map((empleado) => [
     empleado.nombre,
     empleado.cargo?.nombre || "Sin cargo",
-    empleado.estado,
+
+    formatter.format(empleado.saldo), // Formatear el saldo como moneda
     <div className="action-buttons">
       <button
         className="btn view"

@@ -108,11 +108,11 @@ function RegistroClienteModal({ cliente, onClose, onSuccess }) {
             </label>
           </div>
           <div className="modal-actions">
+            <button type="submit" className="btn confirm">
+              {cliente ? "Guardar Cambios" : "Registrar"}
+            </button>{" "}
             <button type="button" className="btn cancel" onClick={onClose}>
               Cancelar
-            </button>
-            <button type="submit" className="btn submit">
-              {cliente ? "Guardar Cambios" : "Registrar"}
             </button>
           </div>
         </form>

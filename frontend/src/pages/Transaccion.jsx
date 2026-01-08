@@ -22,7 +22,7 @@ function Transaccion() {
   useEffect(() => {
     const fetchTransacciones = async () => {
       try {
-        let url = "http://localhost:4001/api/transacciones";
+        let url = "http://localhost:4000/api/transacciones";
         if (yearFiltro) {
           url += `?year=${yearFiltro}`;
           if (monthFiltro) {
@@ -31,31 +31,10 @@ function Transaccion() {
         }
 
         const response = await axios.get(url);
-        const transaccionesConNombres = await Promise.all(
-          response.data.map(async (transaccion) => {
-            let actorNombre = "";
-            try {
-              if (transaccion.actorTipo === "Empleado") {
-                const empleadoResponse = await axios.get(
-                  `http://localhost:4001/api/empleados/${transaccion.actor}`
-                );
-                actorNombre =
-                  empleadoResponse.data.nombre || "Nombre no disponible";
-              } else if (transaccion.actorTipo === "Trabajo") {
-                const trabajoResponse = await axios.get(
-                  `http://localhost:4001/api/trabajos/${transaccion.actor}`
-                );
-                actorNombre =
-                  trabajoResponse.data.trabajo.titulo || "Título no disponible";
-              }
-            } catch {
-              console.error(
-                `ID no encontrado: ${transaccion.actor} en la colección ${transaccion.actorTipo}`
-              );
-            }
-            return { ...transaccion, actorNombre };
-          })
-        );
+        const transaccionesConNombres = response.data.map((transaccion) => ({
+          ...transaccion,
+          actorNombre: transaccion.actorNombre || "Actor no disponible",
+        }));
 
         setTransacciones(transaccionesConNombres);
       } catch (error) {
@@ -74,7 +53,7 @@ function Transaccion() {
         );
 
         await axios.delete(
-          `http://localhost:4001/api/transacciones/${transaccionAEliminar}`
+          `http://localhost:4000/api/transacciones/${transaccionAEliminar}`
         );
         setTransacciones(
           transacciones.filter(
@@ -93,7 +72,7 @@ function Transaccion() {
             transaccionEliminada.actor
           );
           await axios.put(
-            `http://localhost:4001/api/trabajos/${transaccionEliminada.actor}/actualizar-ganancias`
+            `http://localhost:4000/api/trabajos/${transaccionEliminada.actor}/actualizar-ganancias`
           );
         }
       } catch (error) {
@@ -157,30 +136,30 @@ function Transaccion() {
   };
 
   const handleSuccess = async (transaccion) => {
+    let actorNombre = "Nombre no disponible"; // Valor predeterminado
     try {
-      let actorNombre = "";
       if (transaccion.actorTipo === "Empleado") {
         const empleadoResponse = await axios.get(
-          `http://localhost:4001/api/empleados/${transaccion.actor}`
+          `http://localhost:4000/api/empleados/${transaccion.actor}`
         );
-        actorNombre = empleadoResponse.data.nombre || "Nombre no disponible";
+        actorNombre = empleadoResponse.data.nombre || actorNombre;
       } else if (transaccion.actorTipo === "Trabajo") {
         const trabajoResponse = await axios.get(
-          `http://localhost:4001/api/trabajos/${transaccion.actor}`
+          `http://localhost:4000/api/trabajos/${transaccion.actor}`
         );
-        actorNombre =
-          trabajoResponse.data.trabajo.titulo || "Título no disponible";
+        actorNombre = trabajoResponse.data.trabajo.titulo || actorNombre;
+      } else if (transaccion.actorTipo === "Gasto") {
+        actorNombre = transaccion.actor; // Usar directamente el tipo de gasto
       }
-
-      setTransacciones((prevTransacciones) => {
-        return [...prevTransacciones, { ...transaccion, actorNombre }];
-      });
     } catch (error) {
       console.error(
         "Error al obtener datos del actor o actualizar el saldo:",
         error
       );
     } finally {
+      setTransacciones((prevTransacciones) => {
+        return [...prevTransacciones, { ...transaccion, actorNombre }];
+      });
       closeRegistroModal();
     }
   };

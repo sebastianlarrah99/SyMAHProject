@@ -8,9 +8,35 @@ function EditarTransaccionModal({ onClose, onSuccess, transaccion }) {
     descripcion: transaccion?.descripcion || "",
   });
 
+  const [isGasto, setIsGasto] = useState(false);
+  const [actor, setActor] = useState("");
+
+  const actorOptions = [
+    "Material",
+    "Arreglo",
+    "Impuesto",
+    "Seguro",
+    "Herramienta",
+    "Combustible",
+    "Otro",
+  ];
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+  };
+
+  const handleActorChange = (e) => {
+    setActor(e.target.value);
+  };
+
+  const handleGastoToggle = () => {
+    setIsGasto(!isGasto);
+    if (!isGasto) {
+      setActor("Gasto");
+    } else {
+      setActor("");
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -58,12 +84,54 @@ function EditarTransaccionModal({ onClose, onSuccess, transaccion }) {
               onChange={handleChange}
             />
           </div>
+          <div className="form-group">
+            <label htmlFor="isGasto">
+              <input
+                type="checkbox"
+                id="isGasto"
+                checked={isGasto}
+                onChange={handleGastoToggle}
+              />
+              Marcar como Gasto
+            </label>
+          </div>
+          {isGasto ? (
+            <div className="form-group">
+              <label htmlFor="actor">Tipo de Gasto</label>
+              <select
+                id="actor"
+                name="actor"
+                value={actor}
+                onChange={handleActorChange}
+                required
+              >
+                <option value="">Seleccione una opción</option>
+                {actorOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : (
+            <div className="form-group">
+              <label htmlFor="actor">Actor</label>
+              <input
+                type="text"
+                id="actor"
+                name="actor"
+                value={actor}
+                onChange={handleActorChange}
+                required
+              />
+            </div>
+          )}
           <div className="modal-actions">
-            <button type="button" className="btn cancel" onClick={onClose}>
-              Cancelar
-            </button>
             <button type="submit" className="btn confirm">
               Modificar
+            </button>
+            <button type="button" className="btn cancel" onClick={onClose}>
+              Cancelar
             </button>
           </div>
         </form>
