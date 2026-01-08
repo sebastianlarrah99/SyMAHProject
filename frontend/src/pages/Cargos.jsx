@@ -16,7 +16,7 @@ function Cargos() {
   useEffect(() => {
     const fetchCargos = async () => {
       try {
-        const response = await axios.get("https://localhost:4001/api/cargos");
+        const response = await axios.get("http://localhost:4000/api/cargos");
         setCargos(response.data);
       } catch (error) {
         console.error("Error al obtener los cargos:", error);
@@ -36,16 +36,16 @@ function Cargos() {
     try {
       if (cargoSeleccionado) {
         await axios.put(
-          `https://localhost:4001/api/cargos/${cargoSeleccionado._id}`,
+          `http://localhost:4000/api/cargos/${cargoSeleccionado._id}`,
           formData
         );
       } else {
-        await axios.post("https://localhost:4001/api/cargos", formData);
+        await axios.post("http://localhost:4000/api/cargos", formData);
       }
       setIsModalOpen(false);
       setCargoSeleccionado(null);
       setFormData({ nombre: "", pagoPorHora: 0 });
-      const response = await axios.get("https://localhost:4001/api/cargos");
+      const response = await axios.get("http://localhost:4000/api/cargos");
       setCargos(response.data);
     } catch (error) {
       console.error("Error al guardar el cargo:", error);

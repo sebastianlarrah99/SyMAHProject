@@ -5,6 +5,7 @@ const RegistroHoras = require("../models/RegistroHoras");
 const Empleado = require("../models/Empleado");
 const { Transaccion } = require("../models/Transaccion"); // Ajustar la importación para obtener el modelo Transaccion
 const mongoose = require("mongoose"); // Importar mongoose para validar ObjectId
+const { io } = require("../server"); // Importar el objeto io para emitir eventos
 
 // Obtener todos los trabajos
 exports.obtenerTodos = async (req, res) => {
@@ -237,6 +238,22 @@ exports.obtenerTransacciones = async (req, res) => {
   }
 };
 
+// Registrar una nueva transacción
+exports.registrarTransaccion = async (req, res) => {
+  try {
+    const nuevaTransaccion = new Transaccion(req.body);
+    await nuevaTransaccion.save();
+
+    // Emitir un evento de WebSocket para notificar a los clientes
+    io.emit("nuevaTransaccion", nuevaTransaccion);
+
+    res.status(201).json(nuevaTransaccion);
+  } catch (error) {
+    console.error("Error al registrar la transacción:", error);
+    res.status(500).json({ mensaje: "Error al registrar la transacción" });
+  }
+};
+
 // Obtener trabajos pendientes
 exports.obtenerPendientes = async (req, res) => {
   try {
@@ -348,5 +365,72 @@ exports.actualizarGanancias = async (req, res) => {
       message: "Error al actualizar las ganancias del trabajo",
       error: error.message || error,
     });
+  }
+};
+
+// Calcular ganancias por mes incluyendo pagos relacionados con empleados
+exports.calcularGananciasPorMes = async (req, res) => {
+  try {
+    const transacciones = await Transaccion.aggregate([
+      {
+        $match: {
+          $or: [
+            { actorTipo: "Trabajo" }, // Filtrar transacciones relacionadas con trabajos
+            { actorTipo: "Empleado" }, // Incluir transacciones relacionadas con empleados para pagos
+          ],
+        },
+      },
+      {
+        $group: {
+          _id: { $month: "$fecha" }, // Agrupar por mes de la fecha
+          totalCobrado: {
+            $sum: {
+              $cond: [
+                { $eq: [{ $toLower: "$tipo" }, "cobro"] }, // Normalizar a minúsculas
+                "$monto", // Sumar el monto
+                0, // De lo contrario, sumar 0
+              ],
+            },
+          },
+          totalPagado: {
+            $sum: {
+              $cond: [
+                { $eq: [{ $toLower: "$tipo" }, "pago"] }, // Normalizar a minúsculas
+                "$monto", // Sumar el monto
+                0, // De lo contrario, sumar 0
+              ],
+            },
+          },
+        },
+      },
+      {
+        $addFields: {
+          ganancias: { $subtract: ["$totalCobrado", "$totalPagado"] }, // Restar pagos de cobros
+        },
+      },
+      {
+        $sort: { _id: 1 }, // Ordenar por mes
+      },
+    ]);
+
+    console.log(
+      "Transacciones procesadas para calcular ganancias:",
+      transacciones
+    ); // Log para depuración
+
+    const resultados = transacciones.map((transaccion) => ({
+      mes: transaccion._id,
+      ganancias: transaccion.ganancias, // Usar el campo calculado de ganancias
+    }));
+
+    res.status(200).json(resultados);
+  } catch (error) {
+    console.error(
+      "Error al calcular las ganancias por mes usando transacciones:",
+      error
+    );
+    res
+      .status(500)
+      .json({ mensaje: "Error al calcular las ganancias por mes" });
   }
 };

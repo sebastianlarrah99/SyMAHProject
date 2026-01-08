@@ -3,9 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const conectarDB = require("./config/db");
 require("dotenv").config();
-
-// Inicializar la App
-const app = express();
+const app = require("./index"); // Importar la configuración de Express
 
 // Conectar a la Base de Datos
 conectarDB();
@@ -44,4 +42,4 @@ app.listen(PORT, () => {
   console.log(`El servidor HTTP está funcionando en http://localhost:${PORT}`);
 });
 
-module.exports = app;
+module.exports = { app };

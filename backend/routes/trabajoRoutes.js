@@ -54,4 +54,10 @@ router.get("/estado/activos", trabajoController.obtenerActivos);
 // PUT - Actualizar ganancias de un trabajo
 router.put("/:id/actualizar-ganancias", trabajoController.actualizarGanancias);
 
+// GET - Calcular ganancias por mes
+router.get(
+  "/calcular/ganancias-por-mes",
+  trabajoController.calcularGananciasPorMes
+);
+
 module.exports = router;
