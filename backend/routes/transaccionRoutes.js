@@ -67,4 +67,13 @@ router.get(
   transaccionController.buscarPorRangoMonto
 );
 
+// GET - Obtener todos los gastos
+router.get("/tipo/gastos", transaccionController.obtenerTodosLosGastos);
+
+// Nueva ruta para calcular gastos por mes
+router.get(
+  "/calcular/gastos-por-mes",
+  transaccionController.calcularGastosPorMes
+);
+
 module.exports = router;

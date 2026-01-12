@@ -61,4 +61,7 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
+// GET - Obtener pagos a empleados por mes
+router.get("/calcular/pagos-por-mes", empleadoController.obtenerPagosPorMes);
+
 module.exports = router;

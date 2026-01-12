@@ -60,4 +60,10 @@ router.get(
   trabajoController.calcularGananciasPorMes
 );
 
+// GET - Calcular lo cobrado por mes
+router.get(
+  "/calcular/cobrado-por-mes",
+  trabajoController.calcularCobradoPorMes
+);
+
 module.exports = router;

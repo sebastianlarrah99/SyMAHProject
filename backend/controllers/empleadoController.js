@@ -268,3 +268,37 @@ exports.obtenerInactivos = async (req, res) => {
       .json({ message: "Error al obtener empleados inactivos", error });
   }
 };
+
+// Obtener pagos a empleados por mes
+exports.obtenerPagosPorMes = async (req, res) => {
+  try {
+    const pagosPorMes = await Transaccion.aggregate([
+      {
+        $match: { tipo: "pago", actorTipo: "Empleado" }, // Filtrar solo transacciones de tipo "pago" para empleados
+      },
+      {
+        $group: {
+          _id: { mes: { $month: "$fecha" } }, // Agrupar por mes de la fecha
+          pagos: { $sum: "$monto" }, // Sumar el monto de los pagos
+        },
+      },
+      {
+        $project: {
+          mes: "$_id.mes",
+          pagos: 1,
+          _id: 0,
+        },
+      },
+      {
+        $sort: { mes: 1 }, // Ordenar por mes
+      },
+    ]);
+
+    res.status(200).json(pagosPorMes);
+  } catch (error) {
+    console.error("Error al obtener los pagos a empleados por mes:", error);
+    res.status(500).json({
+      mensaje: "Error al obtener los pagos a empleados por mes",
+    });
+  }
+};

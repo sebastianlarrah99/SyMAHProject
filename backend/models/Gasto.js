@@ -15,8 +15,4 @@ const gastoSchema = new mongoose.Schema({
   },
 });
 
-if (!mongoose.models.Gasto) {
-  module.exports = mongoose.model("Gasto", gastoSchema);
-} else {
-  module.exports = mongoose.models.Gasto;
-}
+module.exports = mongoose.models.Gasto || mongoose.model("Gasto", gastoSchema);

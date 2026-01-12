@@ -15,9 +15,8 @@ const DataTable = ({ headers, data }) => {
         <tbody>
           {data.map((row, rowIndex) => (
             <tr className="table-row" key={rowIndex}>
-              {row.map((cell, cellIndex) => (
-                <td key={cellIndex}>{cell}</td>
-              ))}
+              <td>{row.name}</td>
+              <td>{row.formattedValue || row.value}</td>
             </tr>
           ))}
         </tbody>

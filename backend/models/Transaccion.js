@@ -17,9 +17,7 @@ const transaccionSchema = new mongoose.Schema(
     },
     actor: {
       type: mongoose.Schema.Types.Mixed, // Permitir tanto ObjectId como String
-      required: function () {
-        return this.actorTipo !== "Gasto" || this.actorTipo === "Gasto";
-      },
+      required: true,
       validate: {
         validator: function (value) {
           if (this.actorTipo === "Gasto") {
@@ -38,9 +36,9 @@ const transaccionSchema = new mongoose.Schema(
           }
         },
         message: (props) =>
-          props.path === "Gasto"
-            ? `${props.value} no es un tipo de gasto válido.`
-            : `${props.value} no es un ObjectId válido.`,
+          this.actorTipo === "Gasto"
+            ? `${props.value} no es un tipo de gasto válido`
+            : `${props.value} no es un ObjectId válido`,
       },
     },
     actorTipo: {

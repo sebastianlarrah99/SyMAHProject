@@ -522,3 +522,47 @@ exports.obtenerPagos = async (req, res) => {
       .json({ message: "Error al obtener transacciones de pagos", error });
   }
 };
+
+// Obtener todos los gastos
+exports.obtenerTodosLosGastos = async (req, res) => {
+  try {
+    const gastos = await Transaccion.find({ tipo: "gasto" }); // Filtrar solo transacciones de tipo gasto
+    res.status(200).json(gastos);
+  } catch (error) {
+    console.error("Error al obtener todos los gastos:", error);
+    res.status(500).json({ message: "Error al obtener todos los gastos" });
+  }
+};
+
+// Calcular gastos por mes
+exports.calcularGastosPorMes = async (req, res) => {
+  try {
+    const gastosPorMes = await Transaccion.aggregate([
+      {
+        $match: { tipo: "gasto" }, // Filtrar solo transacciones de tipo gasto
+      },
+      {
+        $group: {
+          _id: { $month: "$fecha" },
+          totalGastos: { $sum: "$monto" },
+        },
+      },
+      {
+        $project: {
+          mes: "$_id",
+          totalGastos: 1,
+          _id: 0,
+        },
+      },
+      { $sort: { mes: 1 } },
+    ]);
+
+    res.status(200).json(gastosPorMes);
+  } catch (error) {
+    console.error("Error al calcular los gastos por mes:", error);
+    res.status(500).json({
+      message: "Error al calcular los gastos por mes",
+      error: error.message,
+    });
+  }
+};

@@ -23,7 +23,6 @@ app.use("/api/transacciones", require("./routes/transaccionRoutes"));
 app.use("/api/registro-horas", require("./routes/registroHorasRoutes"));
 app.use("/api/cargos", require("./routes/cargoRoutes"));
 app.use("/auth", require("./routes/authRoutes").router);
-app.use("/api/gastos", require("./routes/gastoRoutes"));
 
 // Middleware para registrar todas las solicitudes entrantes
 app.use((req, res, next) => {

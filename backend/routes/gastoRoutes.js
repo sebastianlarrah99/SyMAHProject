@@ -3,6 +3,7 @@ const {
   crearGasto,
   obtenerGastos,
   eliminarGasto,
+  calcularGastosPorMes,
 } = require("../controllers/gastoController");
 
 const router = express.Router();
@@ -15,5 +16,8 @@ router.get("/", obtenerGastos);
 
 // Ruta para eliminar un gasto por ID
 router.delete("/:id", eliminarGasto);
+
+// Ruta para calcular gastos por mes
+router.get("/calcular/gastos-por-mes", calcularGastosPorMes);
 
 module.exports = router;

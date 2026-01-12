@@ -21,9 +21,19 @@ function RegistroTransaccionModal({ onClose, onSuccess, transaccion }) {
         const trabajosResponse = await axios.get(
           "http://localhost:4000/api/trabajos"
         );
+        const tiposDeGasto = [
+          "Material",
+          "Arreglo",
+          "Impuesto",
+          "Seguro",
+          "Herramienta",
+          "Combustible",
+          "Otro",
+        ];
         setActores({
           empleados: empleadosResponse.data,
           trabajos: trabajosResponse.data,
+          gastos: tiposDeGasto, // Agregar tipos de gasto
         });
       } catch (error) {
         console.error("Error al obtener actores:", error);
@@ -149,15 +159,7 @@ function RegistroTransaccionModal({ onClose, onSuccess, transaccion }) {
                     </option>
                   ))}
                 {formData.actorTipo === "Gasto" &&
-                  [
-                    "Material",
-                    "Arreglo",
-                    "Impuesto",
-                    "Seguro",
-                    "Herramienta",
-                    "Combustible",
-                    "Otro",
-                  ].map((tipoGasto) => (
+                  actores.gastos.map((tipoGasto) => (
                     <option key={tipoGasto} value={tipoGasto}>
                       {tipoGasto}
                     </option>

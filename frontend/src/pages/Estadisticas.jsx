@@ -5,32 +5,121 @@ import CustomBarChart from "../components/BarChart";
 import CustomPieChart from "../components/PieChart";
 import ErrorBoundary from "../components/ErrorBoundary";
 import axios from "axios";
+import DataTable from "../components/DataTable";
 
-const pieChartData = [
-  { name: "Grupo A", value: 400 },
-  { name: "Grupo B", value: 300 },
-  { name: "Grupo C", value: 300 },
-  { name: "Grupo D", value: 200 },
+const meses = [
+  "Enero",
+  "Febrero",
+  "Marzo",
+  "Abril",
+  "Mayo",
+  "Junio",
+  "Julio",
+  "Agosto",
+  "Septiembre",
+  "Octubre",
+  "Noviembre",
+  "Diciembre",
 ];
-
 function Estadisticas() {
   const [selectedOption, setSelectedOption] = useState("option1");
   const [chartData, setChartData] = useState([]);
+  const [pieData, setPieData] = useState([]);
 
-  // Función para obtener ganancias por mes desde el backend
+  // Función para formatear valores como moneda
+  const formatearMoneda = (valor) => {
+    return new Intl.NumberFormat("es-MX", {
+      style: "currency",
+      currency: "MXN",
+    }).format(valor);
+  };
+
+  // Modificar las funciones para mantener valores numéricos en los gráficos
   const obtenerGananciasPorMes = async () => {
     try {
       const response = await axios.get(
         "http://localhost:4000/api/trabajos/calcular/ganancias-por-mes"
       );
       console.log("Datos recibidos del backend:", response.data);
-      const datos = response.data.map((item) => ({
-        name: `Mes ${item.mes}`,
-        value: item.ganancias,
-      }));
+
+      const datos = response.data.map((item) => {
+        const mesNombre = meses[item.mes - 1] || `Mes ${item.mes}`;
+        return {
+          name: mesNombre,
+          value: item.ganancias, // Mantener valores numéricos
+          formattedValue: formatearMoneda(item.ganancias), // Agregar formato solo para mostrar
+        };
+      });
       setChartData(datos);
+      setPieData(datos);
     } catch (error) {
       console.error("Error al obtener las ganancias por mes:", error);
+    }
+  };
+
+  const obtenerCobradoPorMes = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:4000/api/trabajos/calcular/cobrado-por-mes"
+      );
+      console.log("Datos de cobrado recibidos del backend:", response.data);
+
+      const datos = response.data.map((item) => {
+        const mesNombre = meses[item.mes - 1] || `Mes ${item.mes}`;
+        return {
+          name: mesNombre,
+          value: item.cobrado, // Mantener valores numéricos
+          formattedValue: formatearMoneda(item.cobrado), // Agregar formato solo para mostrar
+        };
+      });
+      setChartData(datos);
+      setPieData(datos);
+    } catch (error) {
+      console.error("Error al obtener lo cobrado por mes:", error);
+    }
+  };
+
+  const obtenerPagosPorMes = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:4000/api/empleados/calcular/pagos-por-mes"
+      );
+      console.log("Datos de pagos recibidos del backend:", response.data);
+
+      const datos = response.data.map((item) => {
+        const mesNombre = meses[item.mes - 1] || `Mes ${item.mes}`;
+        return {
+          name: mesNombre,
+          value: item.pagos, // Mantener valores numéricos
+          formattedValue: formatearMoneda(item.pagos), // Agregar formato solo para mostrar
+        };
+      });
+      setChartData(datos);
+      setPieData(datos);
+    } catch (error) {
+      console.error("Error al obtener los pagos por mes:", error);
+    }
+  };
+
+  const obtenerGastosPorMes = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:4000/api/transacciones/calcular/gastos-por-mes"
+      );
+      console.log("Datos de gastos recibidos del backend:", response.data);
+
+      const datos = response.data.map((item) => {
+        const mesNombre = meses[item.mes - 1] || `Mes ${item.mes}`;
+        return {
+          name: mesNombre,
+          value: item.totalGastos, // Mantener valores numéricos
+          formattedValue: formatearMoneda(item.totalGastos), // Agregar formato solo para mostrar
+        };
+      });
+      setChartData(datos);
+      setPieData(datos);
+    } catch (error) {
+      console.error("Error al obtener los gastos por mes:", error);
     }
   };
 
@@ -41,7 +130,34 @@ function Estadisticas() {
       // Configurar polling para actualizar los datos cada 10 segundos
       const interval = setInterval(() => {
         obtenerGananciasPorMes();
-      }, 10000);
+      }, 1000000);
+
+      return () => clearInterval(interval); // Limpiar el intervalo al desmontar
+    } else if (selectedOption === "option2") {
+      obtenerCobradoPorMes();
+
+      // Configurar polling para actualizar los datos cada 10 segundos
+      const interval = setInterval(() => {
+        obtenerCobradoPorMes();
+      }, 1000000);
+
+      return () => clearInterval(interval); // Limpiar el intervalo al desmontar
+    } else if (selectedOption === "option3") {
+      obtenerPagosPorMes();
+
+      // Configurar polling para actualizar los datos cada 10 segundos
+      const interval = setInterval(() => {
+        obtenerPagosPorMes();
+      }, 1000000);
+
+      return () => clearInterval(interval); // Limpiar el intervalo al desmontar
+    } else if (selectedOption === "option4") {
+      obtenerGastosPorMes();
+
+      // Configurar polling para actualizar los datos cada 10 segundos
+      const interval = setInterval(() => {
+        obtenerGastosPorMes();
+      }, 1000000);
 
       return () => clearInterval(interval); // Limpiar el intervalo al desmontar
     }
@@ -54,10 +170,19 @@ function Estadisticas() {
     // Actualizar los datos según la opción seleccionada
     if (option === "option1") {
       obtenerGananciasPorMes();
+    } else if (option === "option2") {
+      obtenerCobradoPorMes();
+    } else if (option === "option3") {
+      obtenerPagosPorMes();
+    } else if (option === "option4") {
+      obtenerGastosPorMes();
     } else {
-      setChartData([]); // Aquí puedes agregar lógica para otras opciones
+      setChartData([]);
+      setPieData([]);
     }
   };
+
+  const encabezado = ["Mes", "Cantidad"];
 
   return (
     <div className="estadisticas container">
@@ -76,21 +201,20 @@ function Estadisticas() {
             value={selectedOption}
           >
             <option value="option1">Ganancias</option>
-            <option value="option3">Cobrado</option>
-            <option value="option4">Pagado</option>
-            <option value="option5">Gastos</option>
+            <option value="option2">Cobrado</option>
+            <option value="option3">Pagado</option>
+            <option value="option4">Gastos</option>
           </select>
+          <div>
+            <DataTable headers={encabezado} data={chartData} />
+          </div>
         </Card>
 
         <Card id="graphics">
           <h2>Gráficos</h2>
           <ErrorBoundary>
             <CustomBarChart data={chartData} xKey="name" barKey="value" />
-            <CustomPieChart
-              data={pieChartData}
-              dataKey="value"
-              nameKey="name"
-            />
+            <CustomPieChart data={pieData} dataKey="value" nameKey="name" />
           </ErrorBoundary>
         </Card>
       </div>

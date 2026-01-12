@@ -434,3 +434,35 @@ exports.calcularGananciasPorMes = async (req, res) => {
       .json({ mensaje: "Error al calcular las ganancias por mes" });
   }
 };
+
+// Calcular lo cobrado por mes
+exports.calcularCobradoPorMes = async (req, res) => {
+  try {
+    const transacciones = await Transaccion.aggregate([
+      {
+        $match: { tipo: "cobro" }, // Filtrar solo las transacciones de tipo "cobro"
+      },
+      {
+        $group: {
+          _id: { mes: { $month: "$fecha" } }, // Agrupar por mes de la fecha
+          cobrado: { $sum: "$monto" }, // Sumar el monto de las transacciones
+        },
+      },
+      {
+        $project: {
+          mes: "$_id.mes",
+          cobrado: 1,
+          _id: 0,
+        },
+      },
+      {
+        $sort: { mes: 1 }, // Ordenar por mes
+      },
+    ]);
+
+    res.status(200).json(transacciones);
+  } catch (error) {
+    console.error("Error al calcular lo cobrado por mes:", error);
+    res.status(500).json({ mensaje: "Error al calcular lo cobrado por mes" });
+  }
+};
