@@ -26,6 +26,9 @@ function Estadisticas() {
   const [chartData, setChartData] = useState([]);
   const [pieData, setPieData] = useState([]);
 
+  // Encabezados para la tabla
+  const encabezado = ["Mes", "Ganancias"];
+
   // Función para formatear valores como moneda
   const formatearMoneda = (valor) => {
     return new Intl.NumberFormat("es-MX", {
@@ -182,13 +185,17 @@ function Estadisticas() {
     }
   };
 
-  const encabezado = ["Mes", "Cantidad"];
+  // Transformar los datos para la tabla
+  const dataParaTabla = chartData.map((item) => [
+    item.name,
+    item.formattedValue,
+  ]);
 
   return (
     <div className="estadisticas container">
       <Card>
         <h2>Estadísticas</h2>
-        <p>Aquí se mostrarán las estadísticas relevantes.</p>
+        <p>Consulta las estadisticas mensuales de SyMAH</p>
       </Card>
 
       <div className="statistics-sections">
@@ -206,7 +213,7 @@ function Estadisticas() {
             <option value="option4">Gastos</option>
           </select>
           <div>
-            <DataTable headers={encabezado} data={chartData} />
+            <DataTable headers={encabezado} data={dataParaTabla} />
           </div>
         </Card>
 
