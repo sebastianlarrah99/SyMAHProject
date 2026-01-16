@@ -15,12 +15,36 @@ function Detalle({ data, onClose }) {
   };
 
   const formatValue = (key, value) => {
-    if (key.toLowerCase() === "cliente" || key.toLowerCase() === "cargo") {
-      // Mostrar el nombre del cliente o cargo si está disponible
-      if (typeof value === "object" && value.nombre) {
-        return value.nombre;
-      }
-      return value; // En caso de que no sea un objeto o no tenga nombre
+    if (Array.isArray(value)) {
+      return (
+        <ul>
+          {value.map((item, index) => (
+            <li key={index}>
+              {Object.entries(item)
+                .filter(([subKey]) => subKey !== "_id") // Excluir el campo _id
+                .map(([subKey, subValue]) => (
+                  <div key={subKey}>
+                    <strong>{formatKey(subKey)}:</strong> {subValue.toString()}
+                  </div>
+                ))}
+            </li>
+          ))}
+        </ul>
+      );
+    }
+
+    if (typeof value === "object" && value !== null) {
+      return (
+        <ul>
+          {Object.entries(value)
+            .filter(([subKey]) => subKey !== "_id") // Excluir el campo _id
+            .map(([subKey, subValue]) => (
+              <li key={subKey}>
+                <strong>{formatKey(subKey)}:</strong> {subValue.toString()}
+              </li>
+            ))}
+        </ul>
+      );
     }
 
     if (
@@ -48,11 +72,14 @@ function Detalle({ data, onClose }) {
   return (
     <Modal onClose={onClose}>
       <div className="detalle-container">
-        <h2>{data.nombre || data.titulo || "Detalle"}</h2>
+        <h2>
+          {data.nombre || data.titulo || `Detalle del Trabajo ${data.id}`}
+        </h2>
         <ul>
           {Object.entries(data)
             .filter(
               ([key]) =>
+                key !== "id" &&
                 key !== "_id" &&
                 key !== "__v" &&
                 key.toLowerCase() !== "createdat" &&

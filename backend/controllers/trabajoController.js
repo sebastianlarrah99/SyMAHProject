@@ -49,13 +49,39 @@ exports.obtenerPorId = async (req, res) => {
   }
 };
 
+// Obtener trabajo por ID personalizado
+exports.obtenerPorIdPersonalizado = async (req, res) => {
+  try {
+    const trabajo = await Trabajo.findOne({ id: req.params.id });
+    if (!trabajo) {
+      return res.status(404).json({ message: "Trabajo no encontrado" });
+    }
+    res.status(200).json(trabajo);
+  } catch (error) {
+    console.error("Error al obtener el trabajo por ID personalizado:", error);
+    res.status(500).json({ message: "Error al obtener el trabajo", error });
+  }
+};
+
 // Crear nuevo trabajo
 exports.crear = async (req, res) => {
   try {
-    const nuevoTrabajo = new Trabajo(req.body);
+    // Obtener el último trabajo registrado para calcular el nuevo ID
+    const ultimoTrabajo = await Trabajo.findOne().sort({ id: -1 });
+    console.log("Último trabajo encontrado:", ultimoTrabajo);
+
+    const ultimoId =
+      ultimoTrabajo && !isNaN(ultimoTrabajo.id) ? ultimoTrabajo.id : 999;
+    const nuevoId = ultimoId + 1;
+    console.log("Nuevo ID calculado:", nuevoId);
+
+    // Crear el nuevo trabajo con el ID calculado
+    const nuevoTrabajo = new Trabajo({ ...req.body, id: nuevoId });
     const trabajoGuardado = await nuevoTrabajo.save();
+
     res.status(201).json(trabajoGuardado);
   } catch (error) {
+    console.error("Error al crear el trabajo:", error);
     res.status(500).json({ message: "Error al crear el trabajo", error });
   }
 };

@@ -10,7 +10,7 @@ import Cliente from "./pages/Cliente";
 import Transaccion from "./pages/Transaccion";
 import Estadisticas from "./pages/Estadisticas";
 import Card from "./components/Card";
-import Presupuestos from "./pages/Presupuestos";
+import Presupuestos from "./pages/Presupuesto";
 
 function App() {
   return (

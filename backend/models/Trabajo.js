@@ -2,6 +2,11 @@ const mongoose = require("mongoose");
 
 const trabajoSchema = new mongoose.Schema(
   {
+    id: {
+      type: Number,
+      unique: true,
+      required: true,
+    },
     titulo: {
       type: String,
       required: true,

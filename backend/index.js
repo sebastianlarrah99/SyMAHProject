@@ -6,6 +6,7 @@ const empleadoRoutes = require("./routes/empleadoRoutes");
 const trabajoRoutes = require("./routes/trabajoRoutes");
 const transaccionRoutes = require("./routes/transaccionRoutes");
 const cargoRoutes = require("./routes/cargoRoutes");
+const presupuestoRoutes = require("./routes/presupuestoRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -26,6 +27,7 @@ app.use("/api/empleados", empleadoRoutes);
 app.use("/api/trabajos", trabajoRoutes);
 app.use("/api/transacciones", transaccionRoutes);
 app.use("/api/cargos", cargoRoutes);
+app.use("/api/presupuestos", presupuestoRoutes);
 
 // Ruta de prueba
 app.get("/", (req, res) => {
@@ -38,6 +40,7 @@ app.get("/", (req, res) => {
       trabajos: "/api/trabajos",
       transacciones: "/api/transacciones",
       cargos: "/api/cargos",
+      presupuestos: "/api/presupuestos",
     },
   });
 });

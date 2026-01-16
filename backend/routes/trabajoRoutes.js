@@ -66,4 +66,7 @@ router.get(
   trabajoController.calcularCobradoPorMes
 );
 
+// GET - Obtener trabajo por ID personalizado
+router.get("/personalizado/:id", trabajoController.obtenerPorIdPersonalizado);
+
 module.exports = router;

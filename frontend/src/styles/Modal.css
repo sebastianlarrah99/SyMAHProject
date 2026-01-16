@@ -18,16 +18,17 @@
   transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
-  padding: 24px;
+  padding: 44px;
   background-color: #333;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   color: #fff;
   z-index: 1000;
   max-width: none;
-  max-height: none;
+  max-height: 900px;
   isolation: isolate;
   will-change: transform, opacity;
+  overflow-y: auto;
 }
 
 #close-button {
@@ -71,6 +72,20 @@
   transform: scale(1.03);
   transition: transform 0.3s ease;
   color: #fff;
+}
+
+#add\ item.btn.confirm {
+  transition: transform 0.3s ease;
+  color: #fff;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin: 20px auto;
+}
+
+#add\ item.btn.confirm:hover {
+  background-color: #007bff;
+  transform: scale(1.03);
 }
 
 .btn.cancel:hover {
