@@ -18,6 +18,12 @@
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
+.card-sections {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+
 .card-content {
   font-size: 16px;
   line-height: 1.5;

@@ -24,6 +24,12 @@ const empleadoSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    horasRegistradas: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "RegistroHoras",
+      },
+    ],
   },
   {
     timestamps: true,

@@ -1,13 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import Card from "../components/Card";
-import DataTable from "../components/DataTable";
+import ErrorBoundary from "../components/ErrorBoundary";
+import CustomBarChart from "../components/BarChart";
+import CustomPieChart from "../components/PieChart";
 import Detalle from "../components/Detalle";
 import Modal from "../components/Modal";
 import RegistroTrabajoModal from "../components/RegistroTrabajoModal";
 import TransaccionesTrabajoModal from "../components/TransaccionesTrabajoModal";
 import { FaEye, FaEdit, FaClock, FaTrash, FaList } from "react-icons/fa";
 import { useRole } from "../context/useRole";
+import DataTable from "../components/DataTable";
 
 function Trabajo() {
   const { role } = useRole();
@@ -20,6 +23,11 @@ function Trabajo() {
   const [trabajoAModificar, setTrabajoAModificar] = useState(null);
   const [trabajoTransacciones, setTrabajoTransacciones] = useState(null);
   const [estadoFiltro, setEstadoFiltro] = useState("activo"); // Estado por defecto
+  const [estadisticas, setEstadisticas] = useState({
+    totalGastoManoObra: 0,
+    totalCobro: 0,
+    gananciasTotales: 0,
+  });
 
   const fetchTrabajos = async () => {
     try {
@@ -34,9 +42,22 @@ function Trabajo() {
     }
   };
 
+  const fetchEstadisticas = useCallback(async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:4000/api/trabajos/calcular/estadisticas"
+      );
+      console.log("Estadísticas recibidas del backend:", response.data);
+      setEstadisticas(response.data);
+    } catch (error) {
+      console.error("Error al obtener las estadísticas de trabajo:", error);
+    }
+  }, []);
+
   useEffect(() => {
     fetchTrabajos();
-  }, [estadoFiltro]);
+    fetchEstadisticas();
+  }, [estadoFiltro, fetchEstadisticas]);
 
   const confirmarEliminacion = async () => {
     if (trabajoAEliminar) {
@@ -148,79 +169,95 @@ function Trabajo() {
       </div>,
     ]);
 
+  const chartData = [
+    { name: "Gasto Mano de Obra", value: estadisticas.totalGastoManoObra },
+    { name: "Total Cobro", value: estadisticas.totalCobro },
+    { name: "Ganancias Totales", value: estadisticas.gananciasTotales },
+  ];
+
   return (
-    <div>
+    <div className="card-container">
       <Card
         title="Gestión de Trabajos"
         description="Administra la información de los trabajos, incluyendo sus detalles y estado."
       ></Card>
-      <Card>
-        <DataTable headers={headers} data={data} />
-        <div className="filter-container">
-          <label htmlFor="estadoFiltro">
-            <select
-              name="estadoFiltro"
-              label="estadoFiltro"
-              id="estadoFiltro"
-              value={estadoFiltro}
-              onChange={(e) => setEstadoFiltro(e.target.value)}
-            >
-              {estadosTrabajo.map((estado) => (
-                <option key={estado} value={estado}>
-                  {estado.charAt(0).toUpperCase() + estado.slice(1)}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
-      </Card>
-      {role === "admin" && (
-        <button
-          className="btn register"
-          onClick={openRegistroModal}
-          style={{ position: "fixed", bottom: "20px", right: "20px" }}
-        >
-          +
-        </button>
-      )}
-      {detalleTrabajo && (
-        <Detalle
-          data={detalleTrabajo}
-          onClose={() => setDetalleTrabajo(null)}
-        />
-      )}
-      {trabajoAEliminar && (
-        <Modal onClose={() => setTrabajoAEliminar(null)}>
-          <div className="modal-content">
-            <h3>Confirmar Eliminación</h3>
-            <p>¿Estás seguro de que deseas eliminar este trabajo?</p>
-            <div className="modal-actions">
-              <button
-                className="btn cancel"
-                onClick={() => setTrabajoAEliminar(null)}
+
+      <div className="card-sections">
+        <Card>
+          <DataTable headers={headers} data={data} />
+          <div className="filter-container">
+            <label htmlFor="estadoFiltro">
+              <select
+                name="estadoFiltro"
+                label="estadoFiltro"
+                id="estadoFiltro"
+                value={estadoFiltro}
+                onChange={(e) => setEstadoFiltro(e.target.value)}
               >
-                Cancelar
-              </button>
-              <button className="btn confirm" onClick={confirmarEliminacion}>
-                Confirmar
-              </button>
-            </div>
+                {estadosTrabajo.map((estado) => (
+                  <option key={estado} value={estado}>
+                    {estado.charAt(0).toUpperCase() + estado.slice(1)}
+                  </option>
+                ))}
+              </select>
+            </label>
           </div>
-        </Modal>
-      )}
-      {isRegistroModalOpen && (
-        <RegistroTrabajoModal
-          onClose={closeRegistroModal}
-          onSuccess={handleSuccess}
-          trabajoAModificar={trabajoAModificar} // Pasar el trabajo a modificar si existe
-        />
-      )}
-      {trabajoTransacciones && (
-        <TransaccionesTrabajoModal
-          trabajoId={trabajoTransacciones}
-          onClose={closeTransaccionesModal}
-        />
-      )}
+        </Card>
+        {role === "admin" && (
+          <button
+            className="btn register"
+            onClick={openRegistroModal}
+            style={{ position: "fixed", bottom: "20px", right: "20px" }}
+          >
+            +
+          </button>
+        )}
+        {detalleTrabajo && (
+          <Detalle
+            data={detalleTrabajo}
+            onClose={() => setDetalleTrabajo(null)}
+          />
+        )}
+        {trabajoAEliminar && (
+          <Modal onClose={() => setTrabajoAEliminar(null)}>
+            <div className="modal-content">
+              <h3>Confirmar Eliminación</h3>
+              <p>¿Estás seguro de que deseas eliminar este trabajo?</p>
+              <div className="modal-actions">
+                <button
+                  className="btn cancel"
+                  onClick={() => setTrabajoAEliminar(null)}
+                >
+                  Cancelar
+                </button>
+                <button className="btn confirm" onClick={confirmarEliminacion}>
+                  Confirmar
+                </button>
+              </div>
+            </div>
+          </Modal>
+        )}
+        {isRegistroModalOpen && (
+          <RegistroTrabajoModal
+            onClose={closeRegistroModal}
+            onSuccess={handleSuccess}
+            trabajoAModificar={trabajoAModificar} // Pasar el trabajo a modificar si existe
+          />
+        )}
+        {trabajoTransacciones && (
+          <TransaccionesTrabajoModal
+            trabajoId={trabajoTransacciones}
+            onClose={closeTransaccionesModal}
+          />
+        )}
+        <Card id="graphics">
+          <h2>Gráficos</h2>
+          <ErrorBoundary>
+            <CustomBarChart data={chartData} xKey="name" barKey="value" />
+            <CustomPieChart data={chartData} dataKey="value" nameKey="name" />
+          </ErrorBoundary>
+        </Card>
+      </div>
     </div>
   );
 }

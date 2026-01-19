@@ -492,3 +492,46 @@ exports.calcularCobradoPorMes = async (req, res) => {
     res.status(500).json({ mensaje: "Error al calcular lo cobrado por mes" });
   }
 };
+
+// Calcular el total de gasto en mano de obra, total cobro y ganancias totales
+exports.calcularEstadisticasTrabajo = async (req, res) => {
+  try {
+    // Obtener todos los trabajos
+    const trabajos = await Trabajo.find();
+
+    // Calcular el gasto total en mano de obra como la suma de gastoManoObra
+    const totalGastoManoObra = trabajos.reduce(
+      (acc, trabajo) => acc + (trabajo.gastoManoObra || 0),
+      0
+    );
+
+    // Obtener todas las transacciones de tipo "cobro" asociadas a trabajos
+    const transaccionesCobro = await Transaccion.find({
+      actorTipo: "Trabajo",
+      tipo: "cobro",
+    });
+    const totalCobro = transaccionesCobro.reduce(
+      (acc, transaccion) => acc + (transaccion.monto || 0),
+      0
+    );
+
+    // Calcular las ganancias totales
+    const gananciasTotales = totalCobro - totalGastoManoObra;
+
+    console.log("Total gasto en mano de obra calculado:", totalGastoManoObra);
+    console.log("Total cobro:", totalCobro);
+    console.log("Ganancias totales calculadas:", gananciasTotales);
+
+    res.status(200).json({
+      totalGastoManoObra,
+      totalCobro,
+      gananciasTotales,
+    });
+  } catch (error) {
+    console.error("Error al calcular las estadísticas de trabajo:", error);
+    res.status(500).json({
+      message: "Error al calcular las estadísticas de trabajo",
+      error: error.message,
+    });
+  }
+};

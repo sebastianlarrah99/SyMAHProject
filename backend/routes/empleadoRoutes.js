@@ -64,4 +64,7 @@ router.delete("/:id", async (req, res) => {
 // GET - Obtener pagos a empleados por mes
 router.get("/calcular/pagos-por-mes", empleadoController.obtenerPagosPorMes);
 
+// Ruta para calcular el total de pagos a empleados
+router.get("/calcular/total-pagos", empleadoController.calcularTotalPagos);
+
 module.exports = router;

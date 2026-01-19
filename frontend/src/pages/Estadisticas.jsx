@@ -192,13 +192,13 @@ function Estadisticas() {
   ]);
 
   return (
-    <div className="estadisticas container">
+    <div className="card-container">
       <Card>
         <h2>Estadísticas</h2>
         <p>Consulta las estadisticas mensuales de SyMAH</p>
       </Card>
 
-      <div className="statistics-sections">
+      <div className="card-sections">
         <Card id="data">
           <h2>Datos</h2>
           <p>Seleccione los datos que desea filtrar.</p>

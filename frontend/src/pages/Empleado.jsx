@@ -22,6 +22,10 @@ import "../styles/EmpleadoTransitions.css";
 import DataTable from "../components/DataTable";
 import ConfigModal from "../components/ConfigModal";
 import { useRole } from "../context/useRole"; // Actualizar la ruta del hook
+import "../styles/Empleado.css";
+import ErrorBoundary from "../components/ErrorBoundary";
+import CustomBarChart from "../components/BarChart";
+import CustomPieChart from "../components/PieChart";
 
 const Empleado = () => {
   const { role } = useRole(); // Obtener el rol del usuario
@@ -39,6 +43,8 @@ const Empleado = () => {
   const [estadoFiltro, setEstadoFiltro] = useState("activo"); // Estado por defecto
   const [empleadoTransacciones, setEmpleadoTransacciones] = useState(null);
   const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
+  const [totalPagado, setTotalPagado] = useState(0);
+  const [totalSaldo, setTotalSaldo] = useState(0);
 
   const formatter = new Intl.NumberFormat("es-MX", {
     style: "currency",
@@ -54,19 +60,54 @@ const Empleado = () => {
       const response = await axios.get(url);
       console.log("Datos recibidos del backend:", response.data); // Depuración
 
-      // Filtrar empleados según el estado seleccionado (solución temporal)
+      // Filtrar empleados según el estado seleccionado
       const empleadosFiltrados = response.data.filter(
         (empleado) => !estadoFiltro || empleado.estado === estadoFiltro
       );
       setEmpleados(empleadosFiltrados);
+
+      // Calcular totales directamente desde los datos de los empleados
+      const totalPagado = empleadosFiltrados.reduce(
+        (acc, empleado) => acc + (empleado.transaccion?.monto || 0),
+        0
+      );
+      const totalSaldo = empleadosFiltrados.reduce(
+        (acc, empleado) => acc + (empleado.saldo || 0),
+        0
+      );
+
+      console.log(
+        "Total Pagado calculado desde empleados (usando monto de transacciones):",
+        totalPagado
+      ); // Depuración
+      console.log("Total Saldo calculado desde empleados:", totalSaldo); // Depuración
+
+      setTotalPagado(totalPagado);
+      setTotalSaldo(totalSaldo);
     } catch (error) {
       console.error("Error al obtener empleados:", error);
     }
   }, [estadoFiltro]);
 
+  const fetchTotalPagos = useCallback(async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:4000/api/empleados/calcular/total-pagos"
+      );
+      console.log(
+        "Total de pagos recibido del backend:",
+        response.data.totalPagos
+      );
+      setTotalPagado(response.data.totalPagos);
+    } catch (error) {
+      console.error("Error al obtener el total de pagos:", error);
+    }
+  }, []);
+
   useEffect(() => {
     fetchEmpleados();
-  }, [fetchEmpleados]);
+    fetchTotalPagos();
+  }, [fetchEmpleados, fetchTotalPagos]);
 
   const confirmarEliminacion = async () => {
     if (empleadoAEliminar) {
@@ -223,29 +264,45 @@ const Empleado = () => {
     </div>,
   ]);
 
+  const chartData = [
+    { name: "Total Pagado", value: totalPagado },
+    { name: "Total Saldo", value: totalSaldo },
+  ];
+
   return (
-    <div style={{ position: "relative" }}>
-      <Card
-        title="Gestión de Empleados"
-        description="Administra la información de los empleados, incluyendo sus datos personales y horarios."
-      ></Card>
+    <div className="card-container">
       <Card>
-        <DataTable headers={headers} data={data} />
-        <div className="filter-container">
-          <label htmlFor="estadoFiltro">
-            {" "}
-            <select
-              id="estadoFiltro"
-              value={estadoFiltro}
-              onChange={handleFilterChange}
-            >
-              <option value="activo">Activos</option>
-              <option value="inactivo">Inactivos</option>
-              <option value="">Todos</option>
-            </select>
-          </label>
-        </div>
+        <h2>Empleados</h2>
+        <p>Gestiona los empleados de SyMAH</p>
       </Card>
+      <div className="card-sections">
+        <Card id="data">
+          <h2>Tabla de Empleados</h2>
+          <DataTable headers={headers} data={data} />
+          <div className="filter-container">
+            <label htmlFor="estadoFiltro">
+              {" "}
+              <select
+                id="estadoFiltro"
+                value={estadoFiltro}
+                onChange={handleFilterChange}
+              >
+                <option value="activo">Activos</option>
+                <option value="inactivo">Inactivos</option>
+                <option value="">Todos</option>
+              </select>
+            </label>
+          </div>
+        </Card>
+        <Card id="graphics">
+          <h2>Graficos</h2>
+          <ErrorBoundary>
+            <CustomBarChart data={chartData} xKey="name" barKey="value" />
+            <CustomPieChart data={chartData} dataKey="value" nameKey="name" />
+          </ErrorBoundary>
+        </Card>
+      </div>
+
       {/* Botón para registrar empleado */}
       {role === "admin" && (
         <button

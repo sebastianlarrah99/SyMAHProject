@@ -69,4 +69,10 @@ router.get(
 // GET - Obtener trabajo por ID personalizado
 router.get("/personalizado/:id", trabajoController.obtenerPorIdPersonalizado);
 
+// Ruta para calcular estadísticas de trabajo
+router.get(
+  "/calcular/estadisticas",
+  trabajoController.calcularEstadisticasTrabajo
+);
+
 module.exports = router;

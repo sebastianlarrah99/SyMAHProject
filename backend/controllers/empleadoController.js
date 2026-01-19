@@ -302,3 +302,40 @@ exports.obtenerPagosPorMes = async (req, res) => {
     });
   }
 };
+
+// Calcular el total de pagos a todos los empleados
+exports.calcularTotalPagos = async (req, res) => {
+  try {
+    const empleados = await Empleado.find();
+
+    // Obtener todas las transacciones asociadas a empleados
+    const transacciones = await Transaccion.find({
+      actorTipo: "Empleado",
+      tipo: "pago",
+    });
+
+    // Crear un mapa para sumar los pagos por empleado
+    const pagosPorEmpleado = transacciones.reduce((acc, transaccion) => {
+      const empleadoId = transaccion.actor.toString();
+      acc[empleadoId] = (acc[empleadoId] || 0) + transaccion.monto;
+      return acc;
+    }, {});
+
+    // Calcular el total de pagos
+    const totalPagos = Object.values(pagosPorEmpleado).reduce(
+      (acc, monto) => acc + monto,
+      0
+    );
+
+    console.log("Pagos por empleado:", pagosPorEmpleado);
+    console.log("Total de pagos a todos los empleados:", totalPagos);
+
+    res.status(200).json({ totalPagos });
+  } catch (error) {
+    console.error("Error al calcular el total de pagos a empleados:", error);
+    res.status(500).json({
+      message: "Error al calcular el total de pagos a empleados",
+      error: error.message,
+    });
+  }
+};
