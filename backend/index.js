@@ -7,13 +7,21 @@ const trabajoRoutes = require("./routes/trabajoRoutes");
 const transaccionRoutes = require("./routes/transaccionRoutes");
 const cargoRoutes = require("./routes/cargoRoutes");
 const presupuestoRoutes = require("./routes/presupuestoRoutes");
+const authRoutes = require("./routes/authRoutes");
+const cookieParser = require("cookie-parser");
 
 const app = express();
 const PORT = process.env.PORT || 4000;
 
 // Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173", // Cambiado al dominio correcto del frontend
+    credentials: true, // Permitir cookies
+  }),
+);
 app.use(express.json());
+app.use(cookieParser());
 
 // Middleware para registrar todas las solicitudes
 app.use((req, res, next) => {
@@ -28,6 +36,7 @@ app.use("/api/trabajos", trabajoRoutes);
 app.use("/api/transacciones", transaccionRoutes);
 app.use("/api/cargos", cargoRoutes);
 app.use("/api/presupuestos", presupuestoRoutes);
+app.use("/auth", authRoutes);
 
 // Ruta de prueba
 app.get("/", (req, res) => {
@@ -41,6 +50,7 @@ app.get("/", (req, res) => {
       transacciones: "/api/transacciones",
       cargos: "/api/cargos",
       presupuestos: "/api/presupuestos",
+      auth: "/auth",
     },
   });
 });

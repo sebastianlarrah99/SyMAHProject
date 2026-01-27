@@ -3,10 +3,10 @@ const bcrypt = require("bcryptjs");
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User"); // Modelo de usuario
+const { registerUser, loginUser } = require("../controllers/userController");
 require("dotenv").config(); // Cargar variables de entorno
 const rateLimit = require("express-rate-limit"); // Middleware para limitar la cantidad de solicitudes
-const fastifyCsrf = require("@fastify/csrf");
-const fastify = require("fastify")();
+const csrf = require("csurf");
 
 // Middleware para limitar la cantidad de solicitudes
 const limiter = rateLimit({
@@ -16,89 +16,40 @@ const limiter = rateLimit({
     "Demasiadas solicitudes desde esta IP, por favor intenta de nuevo más tarde.",
 });
 
-// Configurar el plugin de CSRF
-fastify.register(fastifyCsrf, { cookie: true });
+// Configurar el middleware de CSRF
+const csrfProtection = csrf({ cookie: true });
 
 // Aplicar el middleware de rate limiting a todas las rutas de autenticación
 router.use(limiter);
+router.use(csrfProtection);
 
 // Ruta para registrar un nuevo usuario
-router.post("/register", async (req, res) => {
-  const { username, password, role } = req.body; // Agregar el campo role
-
-  try {
-    // Verificar si el usuario ya existe
-    const existingUser = await User.findOne({ username });
-    if (existingUser) {
-      return res.status(400).json({ message: "El usuario ya existe" });
-    }
-
-    console.log("Contraseña antes del hasheo:", password);
-    // Crear y guardar el nuevo usuario con la contraseña sin hashear
-    const newUser = new User({ username, password, role });
-    await newUser.save();
-
-    res.status(201).json({ message: "Usuario registrado exitosamente" });
-  } catch (error) {
-    res.status(500).json({ message: "Error al registrar el usuario", error });
-  }
-});
+router.post("/register", registerUser);
 
 // Ruta para iniciar sesión
-router.post("/login", async (req, res) => {
-  const { username, password } = req.body;
-
-  try {
-    console.log("Intentando iniciar sesión con:", username);
-    // Verificar si el usuario existe
-    const user = await User.findOne({ username });
-    console.log("Usuario encontrado:", user);
-    if (!user) {
-      return res.status(400).json({ message: "Credenciales inválidas" });
-    }
-
-    // Verificar la contraseña
-    console.log("Contraseña ingresada:", password);
-    console.log("Contraseña en la base de datos:", user.password);
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    console.log("Resultado de bcrypt.compare:", isPasswordValid);
-    if (!isPasswordValid) {
-      return res.status(400).json({ message: "Credenciales inválidas" });
-    }
-
-    // Generar un token JWT que incluya el rol del usuario
-    const token = jwt.sign(
-      { id: user._id, username: user.username, role: user.role },
-      process.env.JWT_SECRET || "default_secret_key",
-      { expiresIn: "1h" }
-    );
-
-    res.status(200).json({
-      message: "Inicio de sesión exitoso",
-      token,
-      role: user.role, // Incluir el rol en la respuesta
-    });
-  } catch (error) {
-    res.status(500).json({ message: "Error al iniciar sesión", error });
-  }
-});
+router.post("/login", loginUser);
 
 // Middleware para proteger rutas
 const authenticate = (req, res, next) => {
-  const token = req.headers["authorization"];
+  const authHeader = req.headers["authorization"];
+  console.log("Encabezado de autorización recibido:", authHeader); // Registro de depuración
 
-  if (!token) {
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    console.log("Token no proporcionado o formato incorrecto"); // Registro de depuración
     return res.status(401).json({ message: "Acceso denegado" });
   }
+
+  const token = authHeader.split(" ")[1]; // Extraer el token después de Bearer
 
   try {
     const verified = jwt.verify(
       token,
-      process.env.JWT_SECRET || "default_secret_key"
+      process.env.JWT_SECRET || "default_secret_key",
     );
     req.user = verified;
     next();
   } catch (error) {
+    console.log("Error al verificar el token:", error.message); // Registro de depuración
     res.status(401).json({ message: "Token inválido" });
   }
 };
@@ -125,7 +76,7 @@ router.post("/refresh-token", authenticate, (req, res) => {
     const newToken = jwt.sign(
       { id: req.user.id, username: req.user.username },
       process.env.JWT_SECRET || "default_secret_key",
-      { expiresIn: "1h" }
+      { expiresIn: "1h" },
     );
     res.status(200).json({ token: newToken });
   } catch (error) {
@@ -135,8 +86,37 @@ router.post("/refresh-token", authenticate, (req, res) => {
 
 // Ruta para obtener el token CSRF
 router.get("/csrf-token", (req, res) => {
-  const csrfToken = fastify.csrfToken();
-  res.status(200).json({ csrfToken });
+  res.json({ csrfToken: req.csrfToken() });
 });
 
-module.exports = { router, authenticate, authorize };
+// Ruta para cerrar sesión
+router.post("/logout", authenticate, (req, res) => {
+  try {
+    // Invalidar el token en el cliente
+    res.status(200).json({ message: "Sesión cerrada exitosamente" });
+  } catch (error) {
+    res.status(500).json({ message: "Error al cerrar sesión", error });
+  }
+});
+
+// Middleware para manejar errores de CSRF
+router.use((err, req, res, next) => {
+  if (err.code === "EBADCSRFTOKEN") {
+    return res.status(403).json({ message: "Token CSRF inválido o faltante" });
+  }
+  next(err);
+});
+
+// Middleware para depurar el flujo de CSRF
+router.use((req, res, next) => {
+  console.log(
+    "Token CSRF generado:",
+    req.csrfToken ? req.csrfToken() : "No generado",
+  );
+  console.log("Encabezado X-CSRF-Token recibido:", req.headers["x-csrf-token"]);
+  console.log("Cookies recibidas:", req.cookies);
+  next();
+});
+
+// Exportar el router correctamente
+module.exports = router;

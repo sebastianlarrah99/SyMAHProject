@@ -5,7 +5,30 @@ const Trabajo = require("../models/Trabajo");
 exports.obtenerTodos = async (req, res) => {
   try {
     const clientes = await Cliente.find();
-    res.status(200).json(clientes);
+
+    const clientesConTotales = await Promise.all(
+      clientes.map(async (cliente) => {
+        const trabajos = await Trabajo.find({ cliente: cliente._id });
+
+        const totalPagos = trabajos.reduce(
+          (sum, trabajo) => sum + (trabajo.acumuladoPagos || 0),
+          0,
+        );
+
+        const totalGastoMO = trabajos.reduce(
+          (sum, trabajo) => sum + (trabajo.gastoManoObra || 0),
+          0,
+        );
+
+        return {
+          ...cliente.toObject(),
+          totalPagos,
+          totalGastoMO,
+        };
+      }),
+    );
+
+    res.status(200).json(clientesConTotales);
   } catch (error) {
     res.status(500).json({ message: "Error al obtener los clientes", error });
   }
@@ -41,7 +64,7 @@ exports.actualizar = async (req, res) => {
     const clienteActualizado = await Cliente.findByIdAndUpdate(
       req.params.id,
       req.body,
-      { new: true }
+      { new: true },
     );
     if (!clienteActualizado) {
       return res.status(404).json({ message: "Cliente no encontrado" });
@@ -84,7 +107,7 @@ exports.obtenerTrabajos = async (req, res) => {
 exports.obtenerTransacciones = async (req, res) => {
   try {
     const cliente = await Cliente.findById(req.params.id).populate(
-      "transacciones"
+      "transacciones",
     );
     if (!cliente) {
       return res.status(404).json({ message: "Cliente no encontrado" });
@@ -122,7 +145,7 @@ exports.obtenerTrabajosConDetalles = async (req, res) => {
   } catch (error) {
     console.error(
       "Error al obtener los trabajos con detalles del cliente:",
-      error
+      error,
     );
     res.status(500).json({
       message: "Error al obtener los trabajos con detalles del cliente",
