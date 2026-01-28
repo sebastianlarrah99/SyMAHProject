@@ -8,13 +8,15 @@
   top: 0px;
   color: #fff;
   overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
   margin: 20px auto;
   max-width: auto;
 }
 
 .card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-0.5px);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
@@ -31,7 +33,7 @@
 
 .card-title {
   font-size: 24px;
-  margin-bottom: 20px;
+  margin-bottom: 0px;
 }
 
 .card-description {
@@ -54,16 +56,15 @@
   color: #fff;
 }
 
-.login {
+.login,
+.register {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 20px;
-  button.btn.login {
-    margin-top: 20px;
-    width: 100%;
-    max-width: 400px;
+  button.btn.login,
+  button.btn.register {
     background-color: #d1b442;
     color: #fff;
     border: none;
@@ -73,8 +74,38 @@
     cursor: pointer;
     transition: 0.3s ease;
     font-weight: bold;
+    max-width: 300px;
+    margin: 20% auto 0 auto;
+    transform: scale(1.05);
   }
   button.btn.login:hover {
+    background-color: #d1b442;
+    color: #fff;
+    animation: neon-effect 10s infinite;
+  }
+}
+
+.btn.switch {
+  background-color: transparent;
+  color: #d1b442;
+  border: none;
+  border-radius: 50px;
+  padding: 10px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.3s ease;
+  font-weight: bold;
+  .btn.arrow {
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    border-radius: 100px;
+    width: 50px;
+    height: 50px;
+    background-color: transparent;
+    color: #fff;
+  }
+  .btn.arrow:hover {
     background-color: #d1b442;
     color: #fff;
     transform: scale(1.01);
@@ -134,8 +165,6 @@ label {
 
 .btn.register {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
   background-color: #d1b442;
   color: white;
   border: none;

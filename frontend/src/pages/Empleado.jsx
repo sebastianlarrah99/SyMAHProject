@@ -30,6 +30,11 @@ import CustomPieChart from "../components/PieChart";
 const Empleado = () => {
   const { role } = useRole(); // Obtener el rol del usuario
   console.log("Rol actual del usuario:", role);
+  // Agregar registro de depuración para verificar el rol
+  useEffect(() => {
+    console.log("Rol actual del usuario desde el contexto:", role);
+  }, [role]);
+
   const [empleados, setEmpleados] = useState([]);
   const [selectedEmpleado, setSelectedEmpleado] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -62,23 +67,23 @@ const Empleado = () => {
 
       // Filtrar empleados según el estado seleccionado
       const empleadosFiltrados = response.data.filter(
-        (empleado) => !estadoFiltro || empleado.estado === estadoFiltro
+        (empleado) => !estadoFiltro || empleado.estado === estadoFiltro,
       );
       setEmpleados(empleadosFiltrados);
 
       // Calcular totales directamente desde los datos de los empleados
       const totalPagado = empleadosFiltrados.reduce(
         (acc, empleado) => acc + (empleado.transaccion?.monto || 0),
-        0
+        0,
       );
       const totalSaldo = empleadosFiltrados.reduce(
         (acc, empleado) => acc + (empleado.saldo || 0),
-        0
+        0,
       );
 
       console.log(
         "Total Pagado calculado desde empleados (usando monto de transacciones):",
-        totalPagado
+        totalPagado,
       ); // Depuración
       console.log("Total Saldo calculado desde empleados:", totalSaldo); // Depuración
 
@@ -92,11 +97,11 @@ const Empleado = () => {
   const fetchTotalPagos = useCallback(async () => {
     try {
       const response = await axios.get(
-        "http://localhost:4000/api/empleados/calcular/total-pagos"
+        "http://localhost:4000/api/empleados/calcular/total-pagos",
       );
       console.log(
         "Total de pagos recibido del backend:",
-        response.data.totalPagos
+        response.data.totalPagos,
       );
       setTotalPagado(response.data.totalPagos);
     } catch (error) {
@@ -113,10 +118,10 @@ const Empleado = () => {
     if (empleadoAEliminar) {
       try {
         await axios.delete(
-          `http://localhost:4000/api/empleados/${empleadoAEliminar}`
+          `http://localhost:4000/api/empleados/${empleadoAEliminar}`,
         );
         setEmpleados((empleados) =>
-          empleados.filter((empleado) => empleado._id !== empleadoAEliminar)
+          empleados.filter((empleado) => empleado._id !== empleadoAEliminar),
         );
         setEmpleadoAEliminar(null);
       } catch (error) {
@@ -271,13 +276,13 @@ const Empleado = () => {
 
   return (
     <div className="card-container">
-      <Card>
-        <h2>Empleados</h2>
-        <p>Gestiona los empleados de SyMAH</p>
-      </Card>
+      <Card
+        title="Empleados"
+        description="Gestiona los empleados de SyMAH"
+      ></Card>
       <div className="card-sections">
         <Card id="data">
-          <h2>Tabla de Empleados</h2>
+          <h2 className="card-title">Tabla de Empleados</h2>
           <DataTable headers={headers} data={data} />
           <div className="filter-container">
             <label htmlFor="estadoFiltro">
@@ -294,6 +299,7 @@ const Empleado = () => {
             </label>
           </div>
         </Card>
+        <div></div>
         <Card id="graphics">
           <h2>Graficos</h2>
           <ErrorBoundary>
@@ -302,27 +308,21 @@ const Empleado = () => {
           </ErrorBoundary>
         </Card>
       </div>
+      <div>
+        {role === "admin" && (
+          <button className="btn new" onClick={openRegistroModal}>
+            +
+          </button>
+        )}
+      </div>
+      <div>
+        {role === "admin" && (
+          <button className="btn cargo" onClick={openConfigModal}>
+            -
+          </button>
+        )}
+      </div>
 
-      {/* Botón para registrar empleado */}
-      {role === "admin" && (
-        <button
-          className="btn register"
-          onClick={openRegistroModal}
-          style={{ position: "fixed", bottom: "20px", right: "20px" }}
-        >
-          +
-        </button>
-      )}
-      {/* Botón para registrar cargo */}
-      {role === "admin" && (
-        <button
-          className="btn register"
-          onClick={openConfigModal}
-          style={{ position: "fixed", bottom: "20px", right: "80px" }}
-        >
-          -
-        </button>
-      )}
       {isModalOpen && selectedEmpleado && (
         <RegisterHoursModal
           empleadoId={selectedEmpleado._id}

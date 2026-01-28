@@ -45,7 +45,7 @@ function Trabajo() {
   const fetchEstadisticas = useCallback(async () => {
     try {
       const response = await axios.get(
-        "http://localhost:4000/api/trabajos/calcular/estadisticas"
+        "http://localhost:4000/api/trabajos/calcular/estadisticas",
       );
       console.log("Estadísticas recibidas del backend:", response.data);
       setEstadisticas(response.data);
@@ -63,10 +63,10 @@ function Trabajo() {
     if (trabajoAEliminar) {
       try {
         await axios.delete(
-          `http://localhost:4000/api/trabajos/${trabajoAEliminar}`
+          `http://localhost:4000/api/trabajos/${trabajoAEliminar}`,
         );
         setTrabajos(
-          trabajos.filter((trabajo) => trabajo._id !== trabajoAEliminar)
+          trabajos.filter((trabajo) => trabajo._id !== trabajoAEliminar),
         );
         setTrabajoAEliminar(null);
       } catch (error) {
@@ -204,11 +204,7 @@ function Trabajo() {
           </div>
         </Card>
         {role === "admin" && (
-          <button
-            className="btn register"
-            onClick={openRegistroModal}
-            style={{ position: "fixed", bottom: "20px", right: "20px" }}
-          >
+          <button className="btn new" onClick={openRegistroModal}>
             +
           </button>
         )}

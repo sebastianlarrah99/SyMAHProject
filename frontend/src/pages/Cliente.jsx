@@ -8,10 +8,17 @@ import RegistroClienteModal from "../components/RegistroClienteModal";
 import TrabajosClienteModal from "../components/TrabajosClienteModal";
 import { FaEye, FaEdit, FaTrash, FaList } from "react-icons/fa";
 import { useRole } from "../context/useRole";
+import ErrorBoundary from "../components/ErrorBoundary";
+import CustomBarChart from "../components/BarChart";
+import CustomPieChart from "../components/PieChart";
 
 function Cliente() {
   const { role } = useRole();
   console.log("Rol actual en Cliente:", role);
+
+  useEffect(() => {
+    console.log("Rol actual del usuario desde el contexto:", role); // Depuración
+  }, [role]);
 
   const [clientes, setClientes] = useState([]);
   const [detalleCliente, setDetalleCliente] = useState(null);
@@ -37,10 +44,10 @@ function Cliente() {
     if (clienteAEliminar) {
       try {
         await axios.delete(
-          `http://localhost:4000/api/clientes/${clienteAEliminar}`
+          `http://localhost:4000/api/clientes/${clienteAEliminar}`,
         );
         setClientes(
-          clientes.filter((cliente) => cliente._id !== clienteAEliminar)
+          clientes.filter((cliente) => cliente._id !== clienteAEliminar),
         );
         setClienteAEliminar(null);
       } catch (error) {
@@ -72,8 +79,8 @@ function Cliente() {
       // Actualizar cliente existente en la tabla
       setClientes((prevClientes) =>
         prevClientes.map((cliente) =>
-          cliente._id === nuevoCliente._id ? nuevoCliente : cliente
-        )
+          cliente._id === nuevoCliente._id ? nuevoCliente : cliente,
+        ),
       );
     } else {
       // Agregar nuevo cliente a la tabla
@@ -125,6 +132,25 @@ function Cliente() {
       )}
     </div>,
   ]);
+  const [totalPagado, setTotalPagado] = useState(0);
+  const [totalSaldo, setTotalSaldo] = useState(0);
+
+  useEffect(() => {
+    // Calcular el total pagado y el total del gasto en mano de obra
+    let totalPagos = 0;
+    let totalGastoMO = 0;
+    clientes.forEach((cliente) => {
+      totalPagos += cliente.totalPagos || 0; // Asegurarse de que sea un número válido
+      totalGastoMO += cliente.totalGastoMO || 0; // Asegurarse de que sea un número válido
+    });
+    setTotalPagado(totalPagos);
+    setTotalSaldo(totalGastoMO);
+  }, [clientes]);
+
+  const chartData = [
+    { name: "Total Pagado", value: totalPagado },
+    { name: "Total Saldo", value: totalSaldo },
+  ];
 
   return (
     <div>
@@ -132,14 +158,27 @@ function Cliente() {
         title="Gestión de Clientes"
         description="Administra la información de los clientes, incluyendo sus datos de contacto."
       ></Card>
-      <Card>
-        <DataTable headers={headers} data={data} />
-      </Card>
+      <div className="card-sections">
+        <Card>
+          <DataTable headers={headers} data={data} />
+        </Card>
+        <Card id="graphics">
+          <h2>Graficos</h2>
+          <ErrorBoundary>
+            <CustomBarChart data={chartData} xKey="name" barKey="value" />
+            <CustomPieChart data={chartData} dataKey="value" nameKey="name" />
+            <div>
+              <h3>Totales</h3>
+              <p>Total Pagado: {totalPagado}</p>
+              <p>Total Saldo: {totalSaldo}</p>
+            </div>
+          </ErrorBoundary>
+        </Card>
+      </div>
       {role === "admin" && (
         <button
-          className="btn register"
+          className="btn new"
           onClick={() => setIsRegistroModalOpen(true)}
-          style={{ position: "fixed", bottom: "20px", right: "20px" }}
         >
           +
         </button>

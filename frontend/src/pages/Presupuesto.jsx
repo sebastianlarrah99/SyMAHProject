@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FaPlus, FaEye, FaTrash } from "react-icons/fa";
+import { FaPlus, FaEye, FaTrash, FaFileAlt } from "react-icons/fa";
 import axios from "axios";
 import Modal from "../components/Modal";
 import Card from "../components/Card";
@@ -32,9 +32,9 @@ function Presupuesto() {
     const fetchPresupuestos = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:4000/api/presupuestos"
+          "http://localhost:4000/api/presupuestos",
         );
-        setPresupuestos(response.data);
+        setPresupuestos(response.data); // Actualizar el estado con los datos del backend
       } catch (error) {
         console.error("Error al obtener los presupuestos:", error);
       }
@@ -85,7 +85,7 @@ function Presupuesto() {
     try {
       const response = await axios.post(
         "http://localhost:4000/api/presupuestos",
-        nuevoPresupuesto
+        nuevoPresupuesto,
       );
       setPresupuestos([...presupuestos, response.data]); // Agrega el nuevo presupuesto a la lista
       cerrarModal();
@@ -97,7 +97,7 @@ function Presupuesto() {
   const abrirDetallePresupuesto = async (id) => {
     try {
       const response = await fetch(
-        `http://localhost:4000/api/presupuestos/${id}`
+        `http://localhost:4000/api/presupuestos/${id}`,
       );
       if (!response.ok) {
         throw new Error("Error al obtener el presupuesto");
@@ -117,15 +117,12 @@ function Presupuesto() {
 
   const eliminarPresupuesto = async (id) => {
     try {
-      const response = await fetch(
+      const response = await axios.delete(
         `http://localhost:4000/api/presupuestos/${id}`,
-        {
-          method: "DELETE",
-        }
       );
       if (response.status === 204) {
         setPresupuestos((prevPresupuestos) =>
-          prevPresupuestos.filter((presupuesto) => presupuesto.id !== id)
+          prevPresupuestos.filter((presupuesto) => presupuesto.id !== id),
         );
         console.log("Presupuesto eliminado correctamente");
       } else {
@@ -136,19 +133,62 @@ function Presupuesto() {
     }
   };
 
+  const consultarArchivoPDF = (pdfUrl) => {
+    // Construir la URL absoluta para el archivo PDF
+    const fullUrl = `http://localhost:4000${pdfUrl}`;
+    window.open(fullUrl, "_blank"); // Abrir en una nueva pestaña
+  };
+
+  const agregarArchivoPDF = async (id) => {
+    try {
+      const fileInput = document.createElement("input");
+      fileInput.type = "file";
+      fileInput.accept = ".pdf";
+
+      fileInput.onchange = async (event) => {
+        const file = event.target.files[0];
+        if (file) {
+          const formData = new FormData();
+          formData.append("pdf", file);
+
+          const response = await axios.post(
+            `http://localhost:4000/api/presupuestos/${id}/upload-pdf`,
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            },
+          );
+
+          if (response.status === 200) {
+            setPresupuestos((prevPresupuestos) =>
+              prevPresupuestos.map((presupuesto) =>
+                presupuesto.id === id
+                  ? { ...presupuesto, pdf: response.data.pdfUrl }
+                  : presupuesto,
+              ),
+            );
+          }
+        }
+      };
+
+      fileInput.click();
+    } catch (error) {
+      console.error("Error al cargar el archivo PDF:", error);
+      alert("Hubo un error al cargar el archivo PDF");
+    }
+  };
+
   return (
     <div className="presupuesto-container">
       <Card
         title="Presupuestos"
-        description="Aca se muestran los presupuestos"
+        description="Lista de presupuestos registrados"
       />
 
-      <button
-        className="btn register"
-        onClick={abrirModalRegistro}
-        style={{ position: "fixed", bottom: "20px", right: "20px" }}
-      >
-        <FaPlus />
+      <button className="btn new" onClick={abrirModalRegistro}>
+        +
       </button>
       {isModalOpen && (
         <Modal onClose={cerrarModal}>
@@ -198,7 +238,7 @@ function Presupuesto() {
                       actualizarItem(
                         index,
                         "unitPrice",
-                        parseFloat(e.target.value)
+                        parseFloat(e.target.value),
                       )
                     }
                   />
@@ -210,7 +250,7 @@ function Presupuesto() {
                       actualizarItem(
                         index,
                         "quantity",
-                        parseInt(e.target.value)
+                        parseInt(e.target.value),
                       )
                     }
                   />
@@ -268,6 +308,17 @@ function Presupuesto() {
                 onClick={() => eliminarPresupuesto(presupuesto.id)}
               >
                 <FaTrash />
+              </button>
+              <button
+                className="btn pdf"
+                title={presupuesto.pdf ? "Ver Archivo" : "Agregar Archivo"}
+                onClick={() =>
+                  presupuesto.pdf
+                    ? consultarArchivoPDF(presupuesto.pdf)
+                    : agregarArchivoPDF(presupuesto.id)
+                }
+              >
+                {presupuesto.pdf ? <FaFileAlt /> : <FaPlus />}
               </button>
             </div>
           </Card>

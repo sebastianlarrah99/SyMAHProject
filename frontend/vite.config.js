@@ -12,5 +12,7 @@ export default defineConfig({
         secure: false, // Permitir certificados autofirmados
       },
     },
+    historyApiFallback: true, // Redirigir todas las rutas al index.html
+    open: "/auth", // Abrir directamente en /auth
   },
 });

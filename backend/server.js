@@ -4,6 +4,7 @@ const cors = require("cors");
 const conectarDB = require("./config/db");
 require("dotenv").config();
 const app = require("./index"); // Importar la configuración de Express
+const path = require("path");
 
 // Conectar a la Base de Datos
 conectarDB();
@@ -23,6 +24,16 @@ app.use("/api/transacciones", require("./routes/transaccionRoutes"));
 app.use("/api/registro-horas", require("./routes/registroHorasRoutes"));
 app.use("/api/cargos", require("./routes/cargoRoutes"));
 app.use("/auth", require("./routes/authRoutes"));
+
+// Servir la carpeta 'uploads' como estática
+app.use("/uploads", express.static("uploads"));
+
+// Ruta para servir archivos PDF directamente en el navegador
+app.get("/uploads/:filename", (req, res) => {
+  const filePath = path.join(__dirname, "uploads", req.params.filename);
+  res.setHeader("Content-Disposition", "inline"); // Forzar apertura en el navegador
+  res.sendFile(filePath);
+});
 
 // Middleware para registrar todas las solicitudes entrantes
 app.use((req, res, next) => {

@@ -29,11 +29,11 @@ root.render(
     <StrictMode>
       <Router>
         <Routes>
-          <Route path="/" element={<Login />} />
+          <Route path="/auth" element={<Login />} />
           <Route path="/app/*" element={<App />} />
           <Route path="/test-bar-chart" element={<BasicBarChart />} />
         </Routes>
       </Router>
     </StrictMode>
-  </RoleProvider>
+  </RoleProvider>,
 );

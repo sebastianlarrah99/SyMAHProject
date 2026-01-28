@@ -92,7 +92,9 @@ button {
   font-family: inherit;
   background-color: #1a1a1a;
   cursor: pointer;
-  transition: border-color 0.25s, background-color 0.25s;
+  transition:
+    border-color 0.25s,
+    background-color 0.25s;
 }
 
 button:hover {
@@ -105,9 +107,13 @@ button:focus-visible {
 }
 
 .btn.logout,
-.btn.register {
+.btn.new,
+.btn.cargo {
+  background-color: #d1b442 !important;
   color: white;
-  transition: background-color 0.3s, box-shadow 0.3s !important;
+  transition:
+    background-color 0.3s,
+    box-shadow 0.3s !important;
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.5) !important;
 }
 
@@ -116,16 +122,41 @@ button:focus-visible {
   box-shadow: 0 0 20px rgba(255, 0, 0, 0.8) !important;
 }
 
-.btn.register:hover {
+.btn.new:hover,
+.btn.cargo:hover {
   background-color: green !important;
   box-shadow: 0 0 20px rgba(0, 255, 0, 0.8) !important;
 }
 
-button.btn.logout {
+button.btn.logout,
+button.btn.new {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
+  width: 45px;
+  height: 45px;
+  margin: 20px;
   border-radius: 100%;
+  bottom: 15px;
+  right: 15px;
+  font-size: 26px;
+}
+
+.btn.cargo {
+  position: fixed;
+  width: 45px;
+  height: 45px;
+  margin: 20px;
+  border-radius: 100%;
+  bottom: 15px;
+  right: 90px;
+  font-size: 26px;
+}
+
+.container.new {
+  display: flex !important;
+  flex-direction: row !important; /* Asegurar que los elementos estén en fila */
+  gap: 15px !important; /* Espaciado más visible entre los botones */
+  justify-content: flex-start !important; /* Alinear los botones al inicio */
+  align-items: center !important; /* Centrar los botones verticalmente */
 }
 
 @media (max-width: 768px) {
@@ -138,7 +169,7 @@ button.btn.logout {
   }
 
   .btn.logout,
-  .btn.register {
+  .btn.new {
     width: 45px;
     height: 45px;
     bottom: 15px;
@@ -157,7 +188,7 @@ button.btn.logout {
   }
 
   .btn.logout,
-  .btn.register {
+  .btn.new {
     width: 35px;
     height: 35px;
     bottom: 5px;

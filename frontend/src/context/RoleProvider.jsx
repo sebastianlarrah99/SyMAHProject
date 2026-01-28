@@ -30,6 +30,13 @@ export const RoleProvider = ({ children }) => {
     };
   }, []);
 
+  useEffect(() => {
+    console.log(
+      "Verificando localStorage al cargar el RoleProvider:",
+      localStorage,
+    );
+  }, []);
+
   if (role === undefined) {
     // Mostrar un indicador de carga mientras se obtiene el rol
     return <div>Cargando...</div>;

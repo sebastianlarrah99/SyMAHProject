@@ -7,6 +7,9 @@ import Modal from "../components/Modal";
 import RegistroTransaccionModal from "../components/RegistroTransaccionModal";
 import { FaEye, FaTrash } from "react-icons/fa";
 import { useRole } from "../context/useRole";
+import ErrorBoundary from "../components/ErrorBoundary";
+import CustomBarChart from "../components/BarChart";
+import CustomPieChart from "../components/PieChart";
 
 function Transaccion() {
   const { role } = useRole();
@@ -18,7 +21,8 @@ function Transaccion() {
   const [isRegistroModalOpen, setIsRegistroModalOpen] = useState(false);
   const [yearFiltro, setYearFiltro] = useState("");
   const [monthFiltro, setMonthFiltro] = useState("");
-
+  const [totalIngresos, setTotalIngresos] = useState(0);
+  const [totalEgresos, setTotalEgresos] = useState(0);
   useEffect(() => {
     const fetchTransacciones = async () => {
       try {
@@ -45,20 +49,38 @@ function Transaccion() {
     fetchTransacciones();
   }, [yearFiltro, monthFiltro]);
 
+  useEffect(() => {
+    console.log("Transacciones actuales:", transacciones);
+
+    const ingresos = transacciones
+      .filter((t) => t.tipo === "cobro")
+      .reduce((sum, t) => sum + t.monto, 0);
+
+    const egresos = transacciones
+      .filter((t) => t.tipo === "pago" || t.tipo === "gasto")
+      .reduce((sum, t) => sum + t.monto, 0);
+
+    console.log("Total ingresos calculados:", ingresos);
+    console.log("Total egresos calculados:", egresos);
+
+    setTotalIngresos(ingresos);
+    setTotalEgresos(egresos);
+  }, [transacciones]);
+
   const confirmarEliminacion = async () => {
     if (transaccionAEliminar) {
       try {
         const transaccionEliminada = transacciones.find(
-          (transaccion) => transaccion._id === transaccionAEliminar
+          (transaccion) => transaccion._id === transaccionAEliminar,
         );
 
         await axios.delete(
-          `http://localhost:4000/api/transacciones/${transaccionAEliminar}`
+          `http://localhost:4000/api/transacciones/${transaccionAEliminar}`,
         );
         setTransacciones(
           transacciones.filter(
-            (transaccion) => transaccion._id !== transaccionAEliminar
-          )
+            (transaccion) => transaccion._id !== transaccionAEliminar,
+          ),
         );
         setTransaccionAEliminar(null);
 
@@ -69,10 +91,10 @@ function Transaccion() {
         ) {
           console.log(
             "Actualizando ganancias para el trabajo:",
-            transaccionEliminada.actor
+            transaccionEliminada.actor,
           );
           await axios.put(
-            `http://localhost:4000/api/trabajos/${transaccionEliminada.actor}/actualizar-ganancias`
+            `http://localhost:4000/api/trabajos/${transaccionEliminada.actor}/actualizar-ganancias`,
           );
         }
       } catch (error) {
@@ -140,12 +162,12 @@ function Transaccion() {
     try {
       if (transaccion.actorTipo === "Empleado") {
         const empleadoResponse = await axios.get(
-          `http://localhost:4000/api/empleados/${transaccion.actor}`
+          `http://localhost:4000/api/empleados/${transaccion.actor}`,
         );
         actorNombre = empleadoResponse.data.nombre || actorNombre;
       } else if (transaccion.actorTipo === "Trabajo") {
         const trabajoResponse = await axios.get(
-          `http://localhost:4000/api/trabajos/${transaccion.actor}`
+          `http://localhost:4000/api/trabajos/${transaccion.actor}`,
         );
         actorNombre = trabajoResponse.data.trabajo.titulo || actorNombre;
       } else if (transaccion.actorTipo === "Gasto") {
@@ -154,7 +176,7 @@ function Transaccion() {
     } catch (error) {
       console.error(
         "Error al obtener datos del actor o actualizar el saldo:",
-        error
+        error,
       );
     } finally {
       setTransacciones((prevTransacciones) => {
@@ -164,58 +186,74 @@ function Transaccion() {
     }
   };
 
+  const chartData = [
+    { name: "Ingresos", value: totalIngresos },
+    { name: "Egresos", value: totalEgresos },
+  ];
+
   return (
     <div>
       <Card
         title="Gestión de Transacciones"
         description="Administra las transacciones financieras, incluyendo ingresos y egresos."
       ></Card>
-      <Card>
-        <DataTable headers={headers} data={data} />
-        <div className="filter-container">
-          <label htmlFor="yearFiltro">
-            <select
-              id="yearFiltro"
-              value={yearFiltro}
-              onChange={(e) => setYearFiltro(e.target.value)}
-              placeholder="Ingrese el año"
-            >
-              <option value="">Todos</option>
-              <option value="2025">2025</option>
-              <option value="2026">2026</option>
-              <option value="2027">2027</option>
-              <option value="2028">2028</option>
-            </select>
-          </label>
+      <div className="card-sections">
+        <Card>
+          <DataTable headers={headers} data={data} />
+          <div className="filter-container">
+            <label htmlFor="yearFiltro">
+              <select
+                id="yearFiltro"
+                value={yearFiltro}
+                onChange={(e) => setYearFiltro(e.target.value)}
+                placeholder="Ingrese el año"
+              >
+                <option value="">Todos</option>
+                <option value="2025">2025</option>
+                <option value="2026">2026</option>
+                <option value="2027">2027</option>
+                <option value="2028">2028</option>
+              </select>
+            </label>
 
-          <label htmlFor="monthFiltro">
-            <select
-              id="monthFiltro"
-              value={monthFiltro}
-              onChange={(e) => setMonthFiltro(e.target.value)}
-            >
-              <option value="">Todos</option>
-              <option value="01">Enero</option>
-              <option value="02">Febrero</option>
-              <option value="03">Marzo</option>
-              <option value="04">Abril</option>
-              <option value="05">Mayo</option>
-              <option value="06">Junio</option>
-              <option value="07">Julio</option>
-              <option value="08">Agosto</option>
-              <option value="09">Septiembre</option>
-              <option value="10">Octubre</option>
-              <option value="11">Noviembre</option>
-              <option value="12">Diciembre</option>
-            </select>
-          </label>
-        </div>
-      </Card>
+            <label htmlFor="monthFiltro">
+              <select
+                id="monthFiltro"
+                value={monthFiltro}
+                onChange={(e) => setMonthFiltro(e.target.value)}
+              >
+                <option value="">Todos</option>
+                <option value="01">Enero</option>
+                <option value="02">Febrero</option>
+                <option value="03">Marzo</option>
+                <option value="04">Abril</option>
+                <option value="05">Mayo</option>
+                <option value="06">Junio</option>
+                <option value="07">Julio</option>
+                <option value="08">Agosto</option>
+                <option value="09">Septiembre</option>
+                <option value="10">Octubre</option>
+                <option value="11">Noviembre</option>
+                <option value="12">Diciembre</option>
+              </select>
+            </label>
+          </div>
+        </Card>
+        <Card id="graphics">
+          <h2>Gráficos</h2>
+          <ErrorBoundary>
+            <CustomBarChart data={chartData} xKey="name" barKey="value" />
+            <CustomPieChart data={chartData} dataKey="value" nameKey="name" />
+          </ErrorBoundary>
+          <h3>Totales</h3>
+          <p>Ingresos: {totalIngresos}</p> <p>Egresos: {totalEgresos}</p>
+        </Card>
+      </div>
+
       {role === "admin" && (
         <button
-          className="btn register"
+          className="btn new"
           onClick={() => setIsRegistroModalOpen(true)}
-          style={{ position: "fixed", bottom: "20px", right: "20px" }}
         >
           +
         </button>

@@ -13,6 +13,7 @@ const PresupuestoSchema = new mongoose.Schema({
       subtotal: { type: Number, required: true },
     },
   ],
+  pdf: { type: String, required: false },
 });
 
 module.exports = mongoose.model("Presupuesto", PresupuestoSchema);

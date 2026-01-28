@@ -16,7 +16,7 @@ REM Frontend (Vite)
 echo Iniciando frontend...
 start "Frontend" cmd /k "cd frontend && npm run dev"
 timeout /t 5 > nul
-start http://localhost:5173
+start http://localhost:5173/auth
 
 echo ===============================
 echo Sistema iniciado correctamente

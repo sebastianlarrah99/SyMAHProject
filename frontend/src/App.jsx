@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import { FaPowerOff } from "react-icons/fa";
 
 import "./App.css";
@@ -11,8 +11,20 @@ import Transaccion from "./pages/Transaccion";
 import Estadisticas from "./pages/Estadisticas";
 import Card from "./components/Card";
 import Presupuestos from "./pages/Presupuesto";
+import Auth from "./pages/Auth";
 
 function App() {
+  const navigate = useNavigate();
+
+  // Agregar función para obtener el token CSRF
+  const getCsrfToken = async () => {
+    const response = await fetch("http://localhost:4000/auth/csrf-token", {
+      credentials: "include",
+    });
+    const data = await response.json();
+    return data.csrfToken;
+  };
+
   return (
     <>
       <Navbar />
@@ -28,9 +40,36 @@ function App() {
               />
               <button
                 className="btn logout"
-                onClick={() => {
-                  localStorage.clear();
-                  window.location.href = "https://localhost:5173/";
+                onClick={async () => {
+                  try {
+                    // Verificar si el token existe antes de enviarlo
+                    const token = localStorage.getItem("token");
+                    if (!token) {
+                      console.error("Token no encontrado en localStorage");
+                      alert(
+                        "No se encontró un token de sesión. Por favor, inicia sesión nuevamente.",
+                      );
+                      navigate("/auth");
+                      return;
+                    }
+
+                    const csrfToken = await getCsrfToken(); // Obtener el token CSRF
+                    // Corregir el formato del encabezado Authorization
+                    await fetch("http://localhost:4000/auth/logout", {
+                      method: "POST",
+                      headers: {
+                        Authorization: `Bearer ${token}`, // Usar el formato Bearer <token>
+                        "X-CSRF-Token": csrfToken, // Incluir el token CSRF
+                      },
+                      credentials: "include",
+                    });
+                    localStorage.clear();
+                    // Agregar registro de depuración para verificar la redirección
+                    console.log("Redirigiendo a / después de cerrar sesión");
+                    navigate("/"); // Redirigir a la página principal
+                  } catch (error) {
+                    console.error("Error al cerrar sesión:", error);
+                  }
                 }}
               >
                 <FaPowerOff />
@@ -48,6 +87,7 @@ function App() {
           path="app/cargos"
           element={<h1>Gestión de Cargos - Próximamente</h1>}
         />
+        <Route path="/auth" element={<Auth />} />
       </Routes>
     </>
   );

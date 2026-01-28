@@ -50,14 +50,6 @@ const Navbar = () => {
         >
           <Link to="/app/presupuestos">Presupuestos</Link>
         </li>
-        <li
-          className={location.pathname === "/" ? "active" : ""}
-          onClick={() => {
-            localStorage.removeItem("token");
-            localStorage.removeItem("role");
-            window.location.href = "/"; // Redirigir al login
-          }}
-        ></li>
       </ul>
     </nav>
   );

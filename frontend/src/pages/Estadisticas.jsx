@@ -41,7 +41,7 @@ function Estadisticas() {
   const obtenerGananciasPorMes = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:4000/api/trabajos/calcular/ganancias-por-mes"
+        "http://localhost:4000/api/trabajos/calcular/ganancias-por-mes",
       );
       console.log("Datos recibidos del backend:", response.data);
 
@@ -63,7 +63,7 @@ function Estadisticas() {
   const obtenerCobradoPorMes = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:4000/api/trabajos/calcular/cobrado-por-mes"
+        "http://localhost:4000/api/trabajos/calcular/cobrado-por-mes",
       );
       console.log("Datos de cobrado recibidos del backend:", response.data);
 
@@ -85,7 +85,7 @@ function Estadisticas() {
   const obtenerPagosPorMes = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:4000/api/empleados/calcular/pagos-por-mes"
+        "http://localhost:4000/api/empleados/calcular/pagos-por-mes",
       );
       console.log("Datos de pagos recibidos del backend:", response.data);
 
@@ -107,7 +107,7 @@ function Estadisticas() {
   const obtenerGastosPorMes = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:4000/api/transacciones/calcular/gastos-por-mes"
+        "http://localhost:4000/api/transacciones/calcular/gastos-por-mes",
       );
       console.log("Datos de gastos recibidos del backend:", response.data);
 
@@ -193,10 +193,10 @@ function Estadisticas() {
 
   return (
     <div className="card-container">
-      <Card>
-        <h2>Estadísticas</h2>
-        <p>Consulta las estadisticas mensuales de SyMAH</p>
-      </Card>
+      <Card
+        title="Estadísticas"
+        description="Consulta las estadisticas mensuales de SyMAH"
+      ></Card>
 
       <div className="card-sections">
         <Card id="data">
