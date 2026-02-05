@@ -46,9 +46,7 @@ function App() {
                     const token = localStorage.getItem("token");
                     if (!token) {
                       console.error("Token no encontrado en localStorage");
-                      alert(
-                        "No se encontró un token de sesión. Por favor, inicia sesión nuevamente.",
-                      );
+                      alert("Sesion cerrada. Por favor, inicia sesion.");
                       navigate("/auth");
                       return;
                     }
@@ -65,8 +63,10 @@ function App() {
                     });
                     localStorage.clear();
                     // Agregar registro de depuración para verificar la redirección
-                    console.log("Redirigiendo a / después de cerrar sesión");
-                    navigate("/"); // Redirigir a la página principal
+                    console.log(
+                      "Redirigiendo a /auth después de cerrar sesión",
+                    );
+                    navigate("/auth"); // Redirigir a la página principal
                   } catch (error) {
                     console.error("Error al cerrar sesión:", error);
                   }
