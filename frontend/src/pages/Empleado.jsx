@@ -281,8 +281,11 @@ const Empleado = () => {
         description="Gestiona los empleados de SyMAH"
       ></Card>
       <div className="card-sections">
-        <Card id="data">
-          <h2 className="card-title">Tabla de Empleados</h2>
+        <Card
+          id="data"
+          title="Lista de Empleados"
+          description="Listado completo de empleados registrados"
+        >
           <DataTable headers={headers} data={data} />
           <div className="filter-container">
             <label htmlFor="estadoFiltro">

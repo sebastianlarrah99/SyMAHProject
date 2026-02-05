@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Card from "../components/Card";
 import ErrorBoundary from "../components/ErrorBoundary";
@@ -8,13 +8,12 @@ import Detalle from "../components/Detalle";
 import Modal from "../components/Modal";
 import RegistroTrabajoModal from "../components/RegistroTrabajoModal";
 import TransaccionesTrabajoModal from "../components/TransaccionesTrabajoModal";
-import { FaEye, FaEdit, FaClock, FaTrash, FaList } from "react-icons/fa";
+import { FaEye, FaEdit, FaTrash, FaList } from "react-icons/fa";
 import { useRole } from "../context/useRole";
 import DataTable from "../components/DataTable";
 
 function Trabajo() {
   const { role } = useRole();
-  console.log("Rol actual en Trabajo:", role);
 
   const [trabajos, setTrabajos] = useState([]);
   const [detalleTrabajo, setDetalleTrabajo] = useState(null);
@@ -22,12 +21,10 @@ function Trabajo() {
   const [isRegistroModalOpen, setIsRegistroModalOpen] = useState(false);
   const [trabajoAModificar, setTrabajoAModificar] = useState(null);
   const [trabajoTransacciones, setTrabajoTransacciones] = useState(null);
-  const [estadoFiltro, setEstadoFiltro] = useState("activo"); // Estado por defecto
-  const [estadisticas, setEstadisticas] = useState({
-    totalGastoManoObra: 0,
-    totalCobro: 0,
-    gananciasTotales: 0,
-  });
+  const [estadoFiltro, setEstadoFiltro] = useState("activo");
+  const [totalGastoManoObra, setTotalGastoManoObra] = useState(0);
+  const [totalCobro, setTotalCobro] = useState(0);
+  const [gananciasTotales, setGananciasTotales] = useState(0);
 
   const fetchTrabajos = async () => {
     try {
@@ -38,26 +35,36 @@ function Trabajo() {
       setTrabajos(response.data || []);
     } catch (error) {
       console.error("Error al obtener los trabajos:", error);
-      setTrabajos([]); // Asegurarse de que trabajos sea un array vacío en caso de error
+      setTrabajos([]);
     }
   };
 
-  const fetchEstadisticas = useCallback(async () => {
-    try {
-      const response = await axios.get(
-        "http://localhost:4000/api/trabajos/calcular/estadisticas",
-      );
-      console.log("Estadísticas recibidas del backend:", response.data);
-      setEstadisticas(response.data);
-    } catch (error) {
-      console.error("Error al obtener las estadísticas de trabajo:", error);
-    }
-  }, []);
-
   useEffect(() => {
     fetchTrabajos();
-    fetchEstadisticas();
-  }, [estadoFiltro, fetchEstadisticas]);
+  }, [estadoFiltro]);
+
+  useEffect(() => {
+    const calcularEstadisticas = () => {
+      const totalGasto = trabajos.reduce(
+        (sum, trabajo) => sum + (trabajo.gastoManoObra || 0),
+        0,
+      );
+      const totalCobro = trabajos.reduce(
+        (sum, trabajo) => sum + (trabajo.acumuladoPagos || 0),
+        0,
+      );
+      const totalGanancias = trabajos.reduce(
+        (sum, trabajo) => sum + (trabajo.ganancias || 0),
+        0,
+      );
+
+      setTotalGastoManoObra(totalGasto);
+      setTotalCobro(totalCobro);
+      setGananciasTotales(totalGanancias);
+    };
+
+    calcularEstadisticas();
+  }, [trabajos]);
 
   const confirmarEliminacion = async () => {
     if (trabajoAEliminar) {
@@ -98,7 +105,7 @@ function Trabajo() {
   };
 
   const handleSuccess = () => {
-    fetchTrabajos(); // Actualizar la tabla automáticamente al registrar o modificar un trabajo
+    fetchTrabajos();
     closeRegistroModal();
   };
 
@@ -109,7 +116,7 @@ function Trabajo() {
     }).format(value);
   };
 
-  const estadosTrabajo = ["pendiente", "en progreso", "completado", "activo"]; // Estados definidos en el modelo
+  const estadosTrabajo = ["pendiente", "en progreso", "completado", "activo"];
   const headers = [
     "Trabajo",
     "Estado",
@@ -117,11 +124,11 @@ function Trabajo() {
     "Fecha Fin",
     "Gasto Mano de Obra",
     "Pago",
-    "Ganancias", // Nuevo encabezado para ganancias
+    "Ganancias",
     "Acciones",
   ];
   const data = trabajos
-    .filter((trabajo) => trabajo && trabajo.titulo) // Validar que el trabajo y su título existan
+    .filter((trabajo) => trabajo && trabajo.titulo)
     .map((trabajo) => [
       trabajo.titulo,
       trabajo.estado,
@@ -131,7 +138,7 @@ function Trabajo() {
         : "Pendiente",
       formatCurrency(trabajo.gastoManoObra),
       formatCurrency(trabajo.acumuladoPagos || 0),
-      formatCurrency(trabajo.ganancias || 0), // Mostrar ganancias
+      formatCurrency(trabajo.ganancias || 0),
       <div className="action-buttons">
         <button
           className="btn view"
@@ -170,9 +177,9 @@ function Trabajo() {
     ]);
 
   const chartData = [
-    { name: "Gasto Mano de Obra", value: estadisticas.totalGastoManoObra },
-    { name: "Total Cobro", value: estadisticas.totalCobro },
-    { name: "Ganancias Totales", value: estadisticas.gananciasTotales },
+    { name: "Gasto Mano de Obra", value: totalGastoManoObra },
+    { name: "Total Cobro", value: totalCobro },
+    { name: "Ganancias Totales", value: gananciasTotales },
   ];
 
   return (
@@ -183,7 +190,10 @@ function Trabajo() {
       ></Card>
 
       <div className="card-sections">
-        <Card>
+        <Card
+          title="Trabajos"
+          description="Lista de trabajos registrados en el sistema"
+        >
           <DataTable headers={headers} data={data} />
           <div className="filter-container">
             <label htmlFor="estadoFiltro">
@@ -237,7 +247,7 @@ function Trabajo() {
           <RegistroTrabajoModal
             onClose={closeRegistroModal}
             onSuccess={handleSuccess}
-            trabajoAModificar={trabajoAModificar} // Pasar el trabajo a modificar si existe
+            trabajoAModificar={trabajoAModificar}
           />
         )}
         {trabajoTransacciones && (

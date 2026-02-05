@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Card from "../components/Card";
-import DataTable from "../components/DataTable";
-import Detalle from "../components/Detalle";
-import Modal from "../components/Modal";
-import RegistroTransaccionModal from "../components/RegistroTransaccionModal";
 import { FaEye, FaTrash } from "react-icons/fa";
+import DataTable from "../components/DataTable";
+import Modal from "../components/Modal";
+import Detalle from "../components/Detalle";
+import RegistroTransaccionModal from "../components/RegistroTransaccionModal";
 import { useRole } from "../context/useRole";
-import ErrorBoundary from "../components/ErrorBoundary";
 import CustomBarChart from "../components/BarChart";
 import CustomPieChart from "../components/PieChart";
+import Card from "../components/Card";
+import ErrorBoundary from "../components/ErrorBoundary";
 
 function Transaccion() {
   const { role } = useRole();
-  console.log("Rol actual en Transaccion:", role);
 
   const [transacciones, setTransacciones] = useState([]);
   const [detalleTransaccion, setDetalleTransaccion] = useState(null);
@@ -23,6 +22,7 @@ function Transaccion() {
   const [monthFiltro, setMonthFiltro] = useState("");
   const [totalIngresos, setTotalIngresos] = useState(0);
   const [totalEgresos, setTotalEgresos] = useState(0);
+
   useEffect(() => {
     const fetchTransacciones = async () => {
       try {
@@ -50,8 +50,6 @@ function Transaccion() {
   }, [yearFiltro, monthFiltro]);
 
   useEffect(() => {
-    console.log("Transacciones actuales:", transacciones);
-
     const ingresos = transacciones
       .filter((t) => t.tipo === "cobro")
       .reduce((sum, t) => sum + t.monto, 0);
@@ -60,9 +58,6 @@ function Transaccion() {
       .filter((t) => t.tipo === "pago" || t.tipo === "gasto")
       .reduce((sum, t) => sum + t.monto, 0);
 
-    console.log("Total ingresos calculados:", ingresos);
-    console.log("Total egresos calculados:", egresos);
-
     setTotalIngresos(ingresos);
     setTotalEgresos(egresos);
   }, [transacciones]);
@@ -70,10 +65,6 @@ function Transaccion() {
   const confirmarEliminacion = async () => {
     if (transaccionAEliminar) {
       try {
-        const transaccionEliminada = transacciones.find(
-          (transaccion) => transaccion._id === transaccionAEliminar,
-        );
-
         await axios.delete(
           `http://localhost:4000/api/transacciones/${transaccionAEliminar}`,
         );
@@ -83,20 +74,6 @@ function Transaccion() {
           ),
         );
         setTransaccionAEliminar(null);
-
-        console.log("Transacción eliminada:", transaccionEliminada);
-        if (
-          transaccionEliminada &&
-          transaccionEliminada.actorTipo === "Trabajo"
-        ) {
-          console.log(
-            "Actualizando ganancias para el trabajo:",
-            transaccionEliminada.actor,
-          );
-          await axios.put(
-            `http://localhost:4000/api/trabajos/${transaccionEliminada.actor}/actualizar-ganancias`,
-          );
-        }
       } catch (error) {
         console.error("Error al eliminar la transacción:", error);
       }
@@ -158,7 +135,7 @@ function Transaccion() {
   };
 
   const handleSuccess = async (transaccion) => {
-    let actorNombre = "Nombre no disponible"; // Valor predeterminado
+    let actorNombre = "Nombre no disponible";
     try {
       if (transaccion.actorTipo === "Empleado") {
         const empleadoResponse = await axios.get(
@@ -169,9 +146,7 @@ function Transaccion() {
         const trabajoResponse = await axios.get(
           `http://localhost:4000/api/trabajos/${transaccion.actor}`,
         );
-        actorNombre = trabajoResponse.data.trabajo.titulo || actorNombre;
-      } else if (transaccion.actorTipo === "Gasto") {
-        actorNombre = transaccion.actor; // Usar directamente el tipo de gasto
+        actorNombre = trabajoResponse.data.titulo || actorNombre;
       }
     } catch (error) {
       console.error(
